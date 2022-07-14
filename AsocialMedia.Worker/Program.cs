@@ -23,6 +23,9 @@ class Program
 
         var factory = new ConnectionFactory { Uri = new(config.GetSection("RabbitMQ:URL").Value) };
         var connection = factory.CreateConnection();
+        connection.ConnectionBlocked += (sender, e) => Console.WriteLine($"Queue connection blocked: {e.Reason}");
+        connection.ConnectionShutdown += (sender, e) => Console.WriteLine($"Queue connection shutdown: {e.ReplyText}");
+        connection.ConnectionUnblocked += (sender, e) => Console.WriteLine($"Queue connection unblocked");
         var channel = connection.CreateModel();
 
         channel.ExchangeDeclare("upload.exchange", "topic", true);
