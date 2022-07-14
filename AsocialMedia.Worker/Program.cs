@@ -1,10 +1,10 @@
 ﻿using AsocialMedia.Worker.Consumer;
-using AsocialMedia.Worker.Helper;
 using AsocialMedia.Worker.Queue;
 using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
+using AsocialMedia.Worker.Helper;
 
 namespace AsocialMedia.Worker;
 
@@ -19,7 +19,7 @@ class Program
             .AddEnvironmentVariables()
             .Build();
 
-        Task.WaitAll(Binaries.DownloadYTDLP(),Binaries.DownloadFFmpeg());
+        Task.WaitAll(YTDLP.Download(),FFmpeg.Download());
 
         var factory = new ConnectionFactory { Uri = new(config.GetSection("RabbitMQ:URL").Value) };
         var connection = factory.CreateConnection();

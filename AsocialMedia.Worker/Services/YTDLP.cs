@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AsocialMedia.Worker.Helper;
 
 namespace AsocialMedia.Worker.Services;
 
@@ -12,8 +13,8 @@ public static class YTDLP
     private static Process CreateDownloadProcess(string url)
     {
         var p = new Process();
-        p.StartInfo.FileName = Helper.Binaries.YTDLPFileName;
-        p.StartInfo.Arguments = $@"{url} -f ""bestvideo[height<=1080]+bestaudio/bestvideo[height<=1080]"" --recode-video mp4 -o ";
+        p.StartInfo.FileName = Helper.YTDLP.fileName;
+        p.StartInfo.Arguments = $@"{url} --ffmpeg-location ""./{FFmpeg.fileName}"" -f ""bestvideo[height<=1080]+bestaudio/bestvideo[height<=1080]"" --recode-video mp4 -o ";
         p.StartInfo.RedirectStandardOutput = true;
         p.StartInfo.RedirectStandardInput = true; // FIX: Do i need them?
         #if (!DEBUG)
