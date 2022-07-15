@@ -3,7 +3,7 @@ WORKDIR /app
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["AsocialMedia.Worker.csproj", "AsocialMedia.Worker/"]
+COPY ["AsocialMedia.Worker/AsocialMedia.Worker.csproj", "AsocialMedia.Worker/"]
 RUN dotnet restore "AsocialMedia.Worker/AsocialMedia.Worker.csproj"
 COPY . .
 WORKDIR "/src/AsocialMedia.Worker"
