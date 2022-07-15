@@ -44,6 +44,6 @@ class Program
         compilationQueue.Consume();
 
         Console.WriteLine("Waiting...");
-        Console.ReadLine();
+        Thread.Sleep(Timeout.Infinite);
     }
 }
