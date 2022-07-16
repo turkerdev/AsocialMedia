@@ -19,7 +19,7 @@ class Program
             .AddEnvironmentVariables()
             .Build();
 
-        Task.WaitAll(YTDLP.Download(),FFmpeg.Download());
+        Task.WaitAll(YTDLP.Download(),FFmpeg.Download(),FFprobe.Download());
 
         var factory = new ConnectionFactory { Uri = new(config.GetSection("RabbitMQ:URL").Value) };
         var connection = factory.CreateConnection();

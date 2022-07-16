@@ -16,10 +16,7 @@ public static class YTDLP
         p.StartInfo.FileName = Helper.YTDLP.fileName;
         p.StartInfo.Arguments = $@"{url} --ffmpeg-location ""./{FFmpeg.fileName}"" -f ""bestvideo[height<=1080]+bestaudio/bestvideo[height<=1080]"" --recode-video mp4 -o ";
         p.StartInfo.RedirectStandardOutput = true;
-        p.StartInfo.RedirectStandardInput = true; // FIX: Do i need them?
-        #if (!DEBUG)
-        p.StartInfo.CreateNoWindow = true;
-        #endif
+        //p.StartInfo.RedirectStandardInput = true; // FIX: Do i need them?
 
         return p;
     }
@@ -40,7 +37,7 @@ public static class YTDLP
         p.StartInfo.Arguments += "-";
 
         p.Start();
-        p.StandardInput.Dispose();
+        //p.StandardInput.Dispose();
 
         return p.StandardOutput;
     }

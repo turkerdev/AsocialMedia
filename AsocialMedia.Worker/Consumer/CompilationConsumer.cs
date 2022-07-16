@@ -35,7 +35,7 @@ public static class CompilationConsumer
             FFMpegArguments.FromPipeInput(new StreamPipeSource(downloadStream.BaseStream))
                 .OutputToFile($"{directoryName}/{i}.mp4", true, opts =>
                 {
-                    opts.WithCustomArgument(@"-filter_complex ""[0:v]boxblur=40,scale=1080x1920,setsar=1[bg];[0:v]scale=1080:1920:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=y=(H-h)/2""");
+                    opts.WithCustomArgument(@"-filter_complex ""[0:v]boxblur=40,scale=720x1280,setsar=1[bg];[0:v]scale=720:1280:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=y=(H-h)/2""");
                     opts.WithAudioCodec(AudioCodec.Aac);
                 })
                 .ProcessSynchronously();
