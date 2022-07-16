@@ -16,8 +16,8 @@ public static class YouTube
         {
             ClientSecrets = new ClientSecrets
             {
-                ClientId = Program.config.GetSection("Google:ClientId").Value,
-                ClientSecret = Program.config.GetSection("Google:ClientSecret").Value
+                ClientId = ConfigManager.Get.Google.ClientId,
+                ClientSecret = ConfigManager.Get.Google.ClientSecret
             },
             Scopes = new[] {
                 YouTubeService.Scope.Youtube,

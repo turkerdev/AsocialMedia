@@ -1,31 +1,23 @@
 ﻿using AsocialMedia.Worker.Services;
 using FFMpegCore;
-using FFMpegCore.Enums;
 using FFMpegCore.Pipes;
 using Google.Apis.YouTube.v3.Data;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using System.Text;
-using System.Text.Json;
 
-namespace AsocialMedia.Worker.Consumer;
+namespace AsocialMedia.Worker.Consumer.Compilation;
 
-public static class CompilationConsumer
+internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
 {
-    public static async void Consumer(object? sender, BasicDeliverEventArgs e, IModel channel)
-    {
-        var bodyByte = e.Body.ToArray();
-        var body = Encoding.UTF8.GetString(bodyByte);
-        var message = JsonSerializer.Deserialize<DTO.CompilationQueue>(body,
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    public string queueName => "asocialmedia.upload.compilation";
 
+    public async void Handle(CompilationConsumerMessage message)
+    {
         var directoryName = "assets";
         var exist = Directory.Exists(directoryName);
         if (exist)
             Directory.Delete(directoryName, true);
         Directory.CreateDirectory(directoryName);
 
-        for (int i = 0; i < message.Assets.Count; i++)
+        for (int i = 0; i < message.Assets.Length; i++)
         {
             var asset = message.Assets[i];
             var downloadStream = YTDLP.Download(asset.Url);
@@ -33,7 +25,6 @@ public static class CompilationConsumer
                 .OutputToFile($"{directoryName}/{i}.mp4", true, opts =>
                 {
                     opts.WithCustomArgument(@"-filter_complex ""[0:v]boxblur=40,scale=720x1280,setsar=1[bg];[0:v]scale=720:1280:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=y=(H-h)/2""");
-                    opts.WithAudioCodec(AudioCodec.Aac);
                 })
                 .ProcessSynchronously();
         }
@@ -61,6 +52,5 @@ public static class CompilationConsumer
         fileStream.Dispose();
 
         Directory.Delete(directoryName, true);
-        channel.BasicAck(e.DeliveryTag, false);
     }
 }

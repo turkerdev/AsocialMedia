@@ -1,21 +1,14 @@
 ﻿using AsocialMedia.Worker.Services;
 using Google.Apis.YouTube.v3.Data;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using System.Text;
-using System.Text.Json;
 
-namespace AsocialMedia.Worker.Consumer;
+namespace AsocialMedia.Worker.Consumer.Basic;
 
-public static class BasicConsumer
+internal class BasicConsumer : IConsumer<BasicConsumerMessage>
 {
-    public static async void Consumer(object? sender, BasicDeliverEventArgs e, IModel channel)
-    {
-        var bodyByte = e.Body.ToArray();
-        var body = Encoding.UTF8.GetString(bodyByte);
-        var message = JsonSerializer.Deserialize<DTO.BasicQueue>(body,
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    public string queueName => "asocialmedia.upload.basic";
 
+    public async void Handle(BasicConsumerMessage message)
+    {
         var directoryName = "assets";
         var exist = Directory.Exists(directoryName);
         if (exist)
@@ -44,6 +37,6 @@ public static class BasicConsumer
         fileStream.Dispose();
 
         Directory.Delete(directoryName, true);
-        channel.BasicAck(e.DeliveryTag, false);
     }
 }
+
