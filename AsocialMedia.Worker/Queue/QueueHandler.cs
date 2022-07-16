@@ -9,7 +9,7 @@ public class QueueHandler
     private readonly IModel Channel;
     private readonly EventingBasicConsumer Consumer;
 
-    public QueueHandler(string queueName,IModel channel,EventHandler<BasicDeliverEventArgs> onConsume)
+    public QueueHandler(string queueName, IModel channel, EventHandler<BasicDeliverEventArgs> onConsume)
     {
         QueueName = queueName;
         Channel = channel;
@@ -23,7 +23,7 @@ public class QueueHandler
 
     public void Consume()
     {
-        Channel.BasicConsume(QueueName,false,Consumer);
+        Channel.BasicConsume(QueueName, false, Consumer);
     }
 }
 

@@ -23,7 +23,7 @@ public static class YouTube
                 YouTubeService.Scope.Youtube,
                 YouTubeService.Scope.YoutubeUpload
             },
-        });;
+        }); ;
 
         var token = new TokenResponse
         {

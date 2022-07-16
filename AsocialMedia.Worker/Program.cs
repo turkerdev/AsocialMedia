@@ -1,10 +1,8 @@
 ﻿using AsocialMedia.Worker.Consumer;
+using AsocialMedia.Worker.Helper;
 using AsocialMedia.Worker.Queue;
 using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
-using System.Text;
-using System.Text.Json;
-using AsocialMedia.Worker.Helper;
 
 namespace AsocialMedia.Worker;
 
@@ -19,7 +17,7 @@ class Program
             .AddEnvironmentVariables()
             .Build();
 
-        Task.WaitAll(YTDLP.Download(),FFmpeg.Download(),FFprobe.Download());
+        Task.WaitAll(YTDLP.Download(), FFmpeg.Download(), FFprobe.Download());
 
         var factory = new ConnectionFactory { Uri = new(config.GetSection("RabbitMQ:URL").Value) };
         var connection = factory.CreateConnection();
@@ -33,14 +31,14 @@ class Program
 
         var basicQueue = new QueueHandler(
             "upload.basic",
-            channel, 
-            (sender,e) => BasicConsumer.Consumer(sender, e, channel));
+            channel,
+            (sender, e) => BasicConsumer.Consumer(sender, e, channel));
         basicQueue.Consume();
 
         var compilationQueue = new QueueHandler(
             "upload.compilation",
-            channel, 
-            (sender,e) => CompilationConsumer.Consumer(sender,e,channel));
+            channel,
+            (sender, e) => CompilationConsumer.Consumer(sender, e, channel));
         compilationQueue.Consume();
 
         Console.WriteLine("Waiting...");

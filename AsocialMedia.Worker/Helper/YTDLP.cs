@@ -7,8 +7,8 @@ namespace AsocialMedia.Worker.Helper;
 public static class YTDLP
 {
     public static readonly string fileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "ytdlp.exe" : "ytdlp";
-    private static readonly string downloadUrl = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) 
-        ? "https://github.com/yt-dlp/yt-dlp/releases/download/2022.06.29/yt-dlp_min.exe" 
+    private static readonly string downloadUrl = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+        ? "https://github.com/yt-dlp/yt-dlp/releases/download/2022.06.29/yt-dlp_min.exe"
         : "https://github.com/yt-dlp/yt-dlp/releases/download/2022.06.29/yt-dlp_linux";
     private static bool isExist => File.Exists(fileName);
 
@@ -16,7 +16,7 @@ public static class YTDLP
     {
         if (isExist)
             return;
-        
+
         using var wc = new WebClient();
 
         wc.DownloadProgressChanged += (obj, e) =>

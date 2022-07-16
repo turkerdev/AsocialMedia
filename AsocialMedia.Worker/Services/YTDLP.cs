@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AsocialMedia.Worker.Helper;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AsocialMedia.Worker.Helper;
 
 namespace AsocialMedia.Worker.Services;
 
