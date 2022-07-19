@@ -7,7 +7,7 @@ internal class BasicConsumer : IConsumer<BasicConsumerMessage>
 {
     public string queueName => "asocialmedia.upload.basic";
 
-    public async void Handle(BasicConsumerMessage message)
+    public async Task Handle(BasicConsumerMessage message)
     {
         var directoryName = Guid.NewGuid().ToString();
         var directory = $"assets/{directoryName}";
@@ -27,7 +27,7 @@ internal class BasicConsumer : IConsumer<BasicConsumerMessage>
         video.Status = new VideoStatus();
         video.Status.PrivacyStatus = "private";
 
-        await using var fileStream = new FileStream(outputPath, FileMode.Open);
+        using var fileStream = new FileStream(outputPath, FileMode.Open);
 
         var youtubeService = Uploader.YouTube.CreateYouTubeService(
             message.Destination.YouTube.AccessToken,

@@ -3,6 +3,6 @@
 internal interface IConsumer<T>
 {
     string queueName { get; }
-    void Handle(T message);
+    Task Handle(T message);
 }
 

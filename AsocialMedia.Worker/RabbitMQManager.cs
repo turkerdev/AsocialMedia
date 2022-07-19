@@ -32,7 +32,7 @@ public static class RabbitMQManager
 
         var eventConsumer = new EventingBasicConsumer(Channel);
 
-        eventConsumer.Received += (_, e) =>
+        eventConsumer.Received += async (_, e) =>
         {
             Console.WriteLine("Got new message from {0}", consumer.queueName);
             var bodyByte = e.Body.ToArray();
@@ -42,7 +42,7 @@ public static class RabbitMQManager
             if (message is null)
                 throw new Exception("Queue incoming message can not be null");
 
-            consumer.Handle(message);
+            await consumer.Handle(message);
             Console.WriteLine("{0} handled successfully", consumer.queueName);
             Channel.BasicAck(e.DeliveryTag, false);
         };

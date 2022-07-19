@@ -12,7 +12,7 @@ class Program
 
         var isExist = Directory.Exists("assets");
         if (isExist)
-            Directory.Delete("assets");
+            Directory.Delete("assets", true);
         Directory.CreateDirectory("assets");
 
         RabbitMQManager.AddConsumer(Consumers.Basic);

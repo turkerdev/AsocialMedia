@@ -9,7 +9,7 @@ internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
 {
     public string queueName => "asocialmedia.upload.compilation";
 
-    public async void Handle(CompilationConsumerMessage message)
+    public async Task Handle(CompilationConsumerMessage message)
     {
         var directoryName = Guid.NewGuid().ToString();
         var directory = $"assets/{directoryName}";
@@ -43,7 +43,7 @@ internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
         video.Status = new VideoStatus();
         video.Status.PrivacyStatus = "private";
 
-        await using var fileStream = new FileStream(outputPath, FileMode.Open);
+        using var fileStream = new FileStream(outputPath, FileMode.Open);
 
         var youtubeService = Uploader.YouTube.CreateYouTubeService(
             message.Destination.YouTube.AccessToken,
