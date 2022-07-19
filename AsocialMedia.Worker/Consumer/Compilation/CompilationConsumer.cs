@@ -14,9 +14,11 @@ internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
         var directoryName = Guid.NewGuid().ToString();
         var directory = $"assets/{directoryName}";
         Directory.CreateDirectory(directory);
+        Console.WriteLine("Using {0} for {1}", directoryName, queueName);
 
         for (int i = 0; i < message.Assets.Length; i++)
         {
+            Console.WriteLine("{0}: Downloading {1}/{2}", directoryName, i + 1, message.Assets.Length);
             var asset = message.Assets[i];
             var downloadStream = YTDLP.Download(asset.Url);
             FFMpegArguments.FromPipeInput(new StreamPipeSource(downloadStream.BaseStream))
@@ -25,6 +27,7 @@ internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
                     opts.WithCustomArgument(@"-filter_complex ""[0:v]boxblur=40,scale=720x1280,setsar=1[bg];[0:v]scale=720:1280:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=y=(H-h)/2""");
                 })
                 .ProcessSynchronously();
+            Console.WriteLine("{0}: Downloaded {1}/{2}", directoryName, i + 1, message.Assets.Length);
         }
 
         var files = Directory.GetFiles(directory);
@@ -50,5 +53,6 @@ internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
         fileStream.Dispose();
 
         Directory.Delete(directory, true);
+        Console.WriteLine("{0}: Done", directoryName);
     }
 }

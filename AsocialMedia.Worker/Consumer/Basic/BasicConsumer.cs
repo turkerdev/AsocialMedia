@@ -12,9 +12,11 @@ internal class BasicConsumer : IConsumer<BasicConsumerMessage>
         var directoryName = Guid.NewGuid().ToString();
         var directory = $"assets/{directoryName}";
         Directory.CreateDirectory(directory);
+        Console.WriteLine("Using {0} for {1}", directoryName, queueName);
 
         string outputPath = $"{directory}/output.mp4";
         YTDLP.Download(message.Asset.Url, outputPath);
+        Console.WriteLine("{0}: Downloaded", directoryName);
 
         var video = new Video();
         video.Snippet = new VideoSnippet();
@@ -35,6 +37,7 @@ internal class BasicConsumer : IConsumer<BasicConsumerMessage>
         fileStream.Dispose();
 
         Directory.Delete(directory, true);
+        Console.WriteLine("{0}: Done", directoryName);
     }
 }
 
