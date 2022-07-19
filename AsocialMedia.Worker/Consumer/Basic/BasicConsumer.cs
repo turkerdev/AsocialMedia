@@ -15,7 +15,7 @@ internal class BasicConsumer : IConsumer<BasicConsumerMessage>
         Console.WriteLine("Using {0} for {1}", directoryName, queueName);
 
         string outputPath = $"{directory}/output.mp4";
-        YTDLP.Download(message.Asset.Url, outputPath);
+        await YTDLP.Download(message.Asset.Url, outputPath);
         Console.WriteLine("{0}: Downloaded", directoryName);
 
         var video = new Video();

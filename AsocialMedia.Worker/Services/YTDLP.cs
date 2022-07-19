@@ -15,13 +15,13 @@ public static class YTDLP
         return p;
     }
 
-    public static void Download(string url, string outputPath)
+    public static async Task Download(string url, string outputPath)
     {
         var p = CreateDownloadProcess(url);
         p.StartInfo.Arguments += @$"""{outputPath}""";
 
         p.Start();
-        p.WaitForExit();
+        await p.WaitForExitAsync();
     }
 
     public static StreamReader Download(string url)

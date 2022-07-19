@@ -22,7 +22,7 @@ internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
 
             var rawPath = $"{directory}/raw_{i}.mp4";
 
-            YTDLP.Download(asset.Url, rawPath);
+            await YTDLP.Download(asset.Url, rawPath);
             await FFMpegArguments.FromFileInput(rawPath)
                 .OutputToFile($"{directory}/ready_to_concat_{i}.mp4", true, opts =>
                 {
