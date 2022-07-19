@@ -35,7 +35,7 @@ internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
         }
 
         var allFiles = Directory.GetFiles(directory);
-        var files = allFiles.Where(x => x.Contains("ready_to_concat"));
+        var files = allFiles.Where(x => x.Contains("ready_to_concat")).OrderBy(x => x);
         var outputPath = $"{directory}/output.mp4";
         FFMpeg.Join(outputPath, files.ToArray());
 
