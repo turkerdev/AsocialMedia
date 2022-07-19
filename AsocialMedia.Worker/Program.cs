@@ -10,6 +10,11 @@ class Program
     {
         Task.WaitAll(YTDLP.Download(), FFmpeg.Download(), FFprobe.Download());
 
+        var isExist = Directory.Exists("assets");
+        if (isExist)
+            Directory.Delete("assets");
+        Directory.CreateDirectory("assets");
+
         RabbitMQManager.AddConsumer(Consumers.Basic);
         RabbitMQManager.AddConsumer(Consumers.Compilation);
 

@@ -48,6 +48,7 @@ public static class RabbitMQManager
         };
 
         Channel.BasicConsume(consumer.queueName, false, eventConsumer);
+        Console.WriteLine("Started consuming {0}", consumer.queueName);
     }
 }
 

@@ -11,26 +11,24 @@ internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
 
     public async void Handle(CompilationConsumerMessage message)
     {
-        var directoryName = "assets";
-        var exist = Directory.Exists(directoryName);
-        if (exist)
-            Directory.Delete(directoryName, true);
-        Directory.CreateDirectory(directoryName);
+        var directoryName = Guid.NewGuid().ToString();
+        var directory = $"assets/{directoryName}";
+        Directory.CreateDirectory(directory);
 
         for (int i = 0; i < message.Assets.Length; i++)
         {
             var asset = message.Assets[i];
             var downloadStream = YTDLP.Download(asset.Url);
             FFMpegArguments.FromPipeInput(new StreamPipeSource(downloadStream.BaseStream))
-                .OutputToFile($"{directoryName}/{i}.mp4", true, opts =>
+                .OutputToFile($"{directory}/{i}.mp4", true, opts =>
                 {
                     opts.WithCustomArgument(@"-filter_complex ""[0:v]boxblur=40,scale=720x1280,setsar=1[bg];[0:v]scale=720:1280:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=y=(H-h)/2""");
                 })
                 .ProcessSynchronously();
         }
 
-        var files = Directory.GetFiles(directoryName);
-        var outputPath = $"{directoryName}/output.mp4";
+        var files = Directory.GetFiles(directory);
+        var outputPath = $"{directory}/output.mp4";
         FFMpeg.Join(outputPath, files);
 
         var video = new Video();
@@ -51,6 +49,6 @@ internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
 
         fileStream.Dispose();
 
-        Directory.Delete(directoryName, true);
+        Directory.Delete(directory, true);
     }
 }

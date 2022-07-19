@@ -9,13 +9,11 @@ internal class BasicConsumer : IConsumer<BasicConsumerMessage>
 
     public async void Handle(BasicConsumerMessage message)
     {
-        var directoryName = "assets";
-        var exist = Directory.Exists(directoryName);
-        if (exist)
-            Directory.Delete(directoryName, true);
-        Directory.CreateDirectory(directoryName);
+        var directoryName = Guid.NewGuid().ToString();
+        var directory = $"assets/{directoryName}";
+        Directory.CreateDirectory(directory);
 
-        string outputPath = "assets/output.mp4";
+        string outputPath = $"{directory}/output.mp4";
         YTDLP.Download(message.Asset.Url, outputPath);
 
         var video = new Video();
@@ -36,7 +34,7 @@ internal class BasicConsumer : IConsumer<BasicConsumerMessage>
 
         fileStream.Dispose();
 
-        Directory.Delete(directoryName, true);
+        Directory.Delete(directory, true);
     }
 }
 
