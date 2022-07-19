@@ -34,6 +34,7 @@ public static class RabbitMQManager
 
         eventConsumer.Received += (_, e) =>
         {
+            Console.WriteLine("Got new message from {0}", consumer.queueName);
             var bodyByte = e.Body.ToArray();
             var body = Encoding.UTF8.GetString(bodyByte);
             var message = JsonConvert.DeserializeObject<T>(body);
@@ -42,6 +43,7 @@ public static class RabbitMQManager
                 throw new Exception("Queue incoming message can not be null");
 
             consumer.Handle(message);
+            Console.WriteLine("{0} handled successfully", consumer.queueName);
             Channel.BasicAck(e.DeliveryTag, false);
         };
 
