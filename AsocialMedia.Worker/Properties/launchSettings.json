@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AsocialMedia.Worker": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

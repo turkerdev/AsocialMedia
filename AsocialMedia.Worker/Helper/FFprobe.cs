@@ -10,7 +10,7 @@ public static class FFprobe
     public static readonly string fileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "ffprobe.exe" : "ffprobe";
     private static readonly string downloadUrl = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
         ? "https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v4.4.1/ffprobe-4.4.1-win-64.zip"
-        : "https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v4.4.1/ffmpeg-4.4.1-linux-64.zip";
+        : "https://github.com/ffbinaries/ffbinaries-prebuilt/releases/download/v4.4.1/ffprobe-4.4.1-linux-64.zip";
     private static bool isExist => File.Exists(fileName);
 
     public static async Task Download()

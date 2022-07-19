@@ -7,7 +7,7 @@ COPY ["AsocialMedia.Worker/AsocialMedia.Worker.csproj", "AsocialMedia.Worker/"]
 RUN dotnet restore "AsocialMedia.Worker/AsocialMedia.Worker.csproj"
 COPY . .
 WORKDIR "/src/AsocialMedia.Worker"
-RUN dotnet build "./AsocialMedia.Worker.csproj" -c Release -o /app/build
+RUN dotnet build "AsocialMedia.Worker.csproj" -c Release -o /app/build
 
 FROM build AS publish
 RUN dotnet publish "AsocialMedia.Worker.csproj" -c Release -o /app/publish
