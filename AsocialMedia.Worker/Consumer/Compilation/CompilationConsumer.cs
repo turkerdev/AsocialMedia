@@ -21,12 +21,12 @@ internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
             Console.WriteLine("{0}: Downloading {1}/{2}", directoryName, i + 1, message.Assets.Length);
             var asset = message.Assets[i];
             var downloadStream = YTDLP.Download(asset.Url);
-            FFMpegArguments.FromPipeInput(new StreamPipeSource(downloadStream.BaseStream))
+            await FFMpegArguments.FromPipeInput(new StreamPipeSource(downloadStream.BaseStream))
                 .OutputToFile($"{directory}/{i}.mp4", true, opts =>
                 {
                     opts.WithCustomArgument(@"-filter_complex ""[0:v]boxblur=40,scale=720x1280,setsar=1[bg];[0:v]scale=720:1280:force_original_aspect_ratio=decrease[fg];[bg][fg]overlay=y=(H-h)/2""");
                 })
-                .ProcessSynchronously();
+                .ProcessAsynchronously();
             Console.WriteLine("{0}: Downloaded {1}/{2}", directoryName, i + 1, message.Assets.Length);
         }
 
