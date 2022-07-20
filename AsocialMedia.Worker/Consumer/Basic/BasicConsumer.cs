@@ -29,10 +29,14 @@ internal class BasicConsumer : IConsumer<BasicConsumerMessage>
 
         using var fileStream = new FileStream(outputPath, FileMode.Open);
 
-        var youtubeService = Uploader.YouTube.CreateYouTubeService(
-            message.Destination.YouTube.AccessToken,
-            message.Destination.YouTube.RefreshToken);
-        await Uploader.YouTube.Upload(youtubeService, video, fileStream);
+        foreach (var youtube in message.Destination.YouTube)
+        {
+            var youtubeService = Uploader.YouTube.CreateYouTubeService(
+                youtube.AccessToken,
+                youtube.RefreshToken);
+
+            await Uploader.YouTube.Upload(youtubeService, video, fileStream);
+        }
 
         fileStream.Dispose();
 

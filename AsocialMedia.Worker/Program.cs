@@ -16,7 +16,6 @@ class Program
         Directory.CreateDirectory("assets");
 
         RabbitMQManager.AddConsumer(Consumers.Basic);
-        RabbitMQManager.AddConsumer(Consumers.Compilation);
 
         Console.WriteLine("Waiting...");
         Thread.Sleep(Timeout.Infinite);
