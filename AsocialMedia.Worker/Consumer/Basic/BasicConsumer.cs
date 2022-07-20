@@ -1,4 +1,4 @@
-﻿using AsocialMedia.Worker.Services;
+﻿using AsocialMedia.Worker.Service.YTDL;
 using Google.Apis.YouTube.v3.Data;
 
 namespace AsocialMedia.Worker.Consumer.Basic;
@@ -7,6 +7,7 @@ internal class BasicConsumer : IConsumer<BasicConsumerMessage>
 {
     public string queueName => "asocialmedia.upload.basic";
 
+
     public async Task Handle(BasicConsumerMessage message)
     {
         var directoryName = Guid.NewGuid().ToString();
@@ -14,9 +15,19 @@ internal class BasicConsumer : IConsumer<BasicConsumerMessage>
         Directory.CreateDirectory(directory);
         Console.WriteLine("Using {0} for {1}", directoryName, queueName);
 
-        string outputPath = $"{directory}/output.mp4";
-        await YTDLP.Download(message.Asset.Url, outputPath);
-        Console.WriteLine("{0}: Downloaded", directoryName);
+        var ytdlService = new YTDLService();
+
+        ytdlService.ProgressChanged += (_, args) =>
+        {
+            Console.WriteLine("{0}% of {1}, {2}/s, ~{3}", args.DownloadProgress, args.TotalSize, args.DownloadSpeed, args.ETA);
+        };
+
+        ytdlService.Downloaded += (_, _) =>
+        {
+            Console.WriteLine("{0}: Downloaded", directoryName);
+        };
+
+        await ytdlService.Download(message.Asset.Url, $"{directory}/output");
 
         var video = new Video();
         video.Snippet = new VideoSnippet();
@@ -27,7 +38,10 @@ internal class BasicConsumer : IConsumer<BasicConsumerMessage>
         video.Status = new VideoStatus();
         video.Status.PrivacyStatus = "private";
 
-        using var fileStream = new FileStream(outputPath, FileMode.Open);
+        var filePath = Directory.GetFiles(directory).Where(x => x.Contains("output")).First();
+        using var fileStream = new FileStream(filePath, FileMode.Open);
+
+        var tasks = new List<Task>();
 
         foreach (var youtube in message.Destination.YouTube)
         {
@@ -35,13 +49,14 @@ internal class BasicConsumer : IConsumer<BasicConsumerMessage>
                 youtube.AccessToken,
                 youtube.RefreshToken);
 
-            await Uploader.YouTube.Upload(youtubeService, video, fileStream);
+            var task = Task.Run(() => Uploader.YouTube.Upload(youtubeService, video, fileStream));
+            tasks.Add(task);
         }
 
-        fileStream.Dispose();
+        Task.WaitAll(tasks.ToArray());
 
+        fileStream.Dispose();
         Directory.Delete(directory, true);
         Console.WriteLine("{0}: Done", directoryName);
     }
 }
-
