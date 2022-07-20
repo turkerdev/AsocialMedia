@@ -1,4 +1,4 @@
-﻿using AsocialMedia.Worker.DTO;
+﻿using AsocialMedia.Worker.Object;
 using Newtonsoft.Json;
 
 namespace AsocialMedia.Worker.Consumer.Basic;
