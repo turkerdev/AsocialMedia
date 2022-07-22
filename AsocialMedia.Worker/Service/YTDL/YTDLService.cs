@@ -13,7 +13,7 @@ public class YTDLService
     {
         var p = new Process();
         p.StartInfo.FileName = YTDLP.fileName;
-        p.StartInfo.Arguments = $@"{url} --ffmpeg-location ""./{FFmpeg.fileName}"" -f ""bestvideo[height<=1080]+bestaudio/bestvideo[height<=1080]"" -o ";
+        p.StartInfo.Arguments = $@"{url} --ffmpeg-location ""./{FFmpeg.fileName}"" -f ""best[height<=1080]"" -o ";
         p.StartInfo.RedirectStandardOutput = true;
 
         return p;
