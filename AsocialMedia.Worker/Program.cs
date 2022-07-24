@@ -17,6 +17,7 @@ class Program
 
         RabbitMQManager.AddConsumer(Consumers.Basic);
         RabbitMQManager.AddConsumer(Consumers.Shorts);
+        RabbitMQManager.AddConsumer(Consumers.Compilation);
 
         Console.WriteLine("Waiting...");
         Thread.Sleep(Timeout.Infinite);
