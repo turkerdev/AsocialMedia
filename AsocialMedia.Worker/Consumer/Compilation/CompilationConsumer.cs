@@ -26,7 +26,7 @@ internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
             var assetPath = $"{directory}/asset_{i}";
             await ytdlService.Download(asset.Url, assetPath);
 
-            if (asset.Metadata?.Credit is not null)
+            if (asset.Credit is not null)
             {
                 Console.WriteLine("{0}: Adding credit to video", directoryName);
 
@@ -35,7 +35,7 @@ internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
                     {
                         opts.WithAudioCodec("copy");
                         opts.Resize(1280, 720);
-                        opts.WithCustomArgument($"-vf drawtext=text='{asset.Metadata.Credit}':fontcolor=white:fontsize=24:x=w-tw-10:y=10:box=1:boxcolor=black@0.5:boxborderw=5");
+                        opts.WithCustomArgument($"-vf drawtext=text='{asset.Credit}':fontcolor=white:fontsize=24:x=w-tw-10:y=10:box=1:boxcolor=black@0.5:boxborderw=5");
                         opts.ForceFormat("mp4");
 
                     })
@@ -60,6 +60,7 @@ internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
         video.Snippet.CategoryId = "22";
         video.Status = new VideoStatus();
         video.Status.PrivacyStatus = "private";
+        video.Status.MadeForKids = false;
 
         using var fileStream = new FileStream($"{directory}/output.mp4", FileMode.Open);
 
@@ -68,8 +69,8 @@ internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
         foreach (var youtube in message.Destination.YouTube)
         {
             var youtubeService = Uploader.YouTube.CreateYouTubeService(
-                youtube.AccessToken,
-                youtube.RefreshToken);
+                youtube.Account.AccessToken,
+                youtube.Account.RefreshToken);
 
             var task = Task.Run(() => Uploader.YouTube.Upload(youtubeService, video, fileStream));
             tasks.Add(task);

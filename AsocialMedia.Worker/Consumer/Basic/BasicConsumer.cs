@@ -46,8 +46,8 @@ internal class BasicConsumer : IConsumer<BasicConsumerMessage>
         foreach (var youtube in message.Destination.YouTube)
         {
             var youtubeService = Uploader.YouTube.CreateYouTubeService(
-                youtube.AccessToken,
-                youtube.RefreshToken);
+                youtube.Account.AccessToken,
+                youtube.Account.RefreshToken);
 
             var task = Task.Run(() => Uploader.YouTube.Upload(youtubeService, video, fileStream));
             tasks.Add(task);
