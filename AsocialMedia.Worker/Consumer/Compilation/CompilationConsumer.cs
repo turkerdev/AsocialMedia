@@ -49,7 +49,7 @@ internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
 
 
         var files = Directory.GetFiles(directory);
-        var assets = files.Where(x => x.StartsWith($"{directory}\\asset"));
+        var assets = files.Where(x => x.Contains("asset"));
         FFMpeg.Join($"{directory}/output.mp4", assets.ToArray());
 
         var video = new Video();
