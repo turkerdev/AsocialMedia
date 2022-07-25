@@ -7,5 +7,5 @@ internal class Asset
     [JsonProperty(Required = Required.Always)]
     public string Url { get; set; } = string.Empty;
 
-    public string? Credit { get; set; }
+    public string? Credit { get; set; } = null;
 }

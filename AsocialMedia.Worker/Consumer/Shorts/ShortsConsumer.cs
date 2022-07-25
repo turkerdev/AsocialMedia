@@ -39,15 +39,6 @@ internal class ShortsConsumer : IConsumer<ShortsConsumerMessage>
             })
             .ProcessAsynchronously();
 
-        var video = new Video();
-        video.Snippet = new VideoSnippet();
-        video.Snippet.Title = "Default Video Title";
-        video.Snippet.Description = "Default Video Description";
-        video.Snippet.Tags = new[] { "tag1", "tag2" };
-        video.Snippet.CategoryId = "22";
-        video.Status = new VideoStatus();
-        video.Status.PrivacyStatus = "private";
-
         var outputPath = Directory.GetFiles(directory).Where(x => x.Contains("output")).First();
         using var fileStream = new FileStream(outputPath, FileMode.Open);
 
@@ -58,6 +49,21 @@ internal class ShortsConsumer : IConsumer<ShortsConsumerMessage>
             var youtubeService = Uploader.YouTube.CreateYouTubeService(
                 youtube.Account.AccessToken,
                 youtube.Account.RefreshToken);
+
+            var video = new Video();
+            video.Snippet = new VideoSnippet();
+            video.Snippet.Title = youtube.Title;
+            if (youtube.Description is not null)
+                video.Snippet.Description = youtube.Description;
+            if (youtube.Tags is not null)
+                video.Snippet.Tags = youtube.Tags;
+            video.Snippet.CategoryId = "22";
+            video.Status = new VideoStatus();
+            video.Status.MadeForKids = youtube.MadeForKids;
+            video.Status.PrivacyStatus = youtube.Privacy;
+            if (youtube.PublishAt is not null)
+                video.Status.PublishAtRaw = youtube.PublishAt;
+
 
             var task = Task.Run(() => Uploader.YouTube.Upload(youtubeService, video, fileStream));
             tasks.Add(task);
