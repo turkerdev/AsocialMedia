@@ -10,8 +10,8 @@ internal class Asset
     public string? Credit { get; set; } = null;
 
     [JsonProperty(PropertyName = "end_time")]
-    public TimeSpan? EndTime { get; set; } = null;
+    public string? EndTime { get; set; } = null;
 
     [JsonProperty(PropertyName = "start_time")]
-    public TimeSpan? StartTime { get; set; } = null;
+    public string? StartTime { get; set; } = null;
 }

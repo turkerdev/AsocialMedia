@@ -21,13 +21,13 @@ public class YTDLService
         return p;
     }
 
-    public async Task Download(string url, string outputPath, TimeSpan? startTime = null, TimeSpan? endTime = null)
+    public async Task Download(string url, string outputPath, string? startTime = null, string? endTime = null)
     {
         var p = CreateProcess(url);
         if (endTime is not null || startTime is not null)
         {
-            var start = startTime.ToString() ?? "0";
-            var end = endTime.ToString() ?? "0";
+            var start = startTime ?? "0";
+            var end = endTime ?? "0";
             var args = $@" --download-sections ""*{start}-{end}""";
             p.StartInfo.Arguments += @$" {args}";
         }
