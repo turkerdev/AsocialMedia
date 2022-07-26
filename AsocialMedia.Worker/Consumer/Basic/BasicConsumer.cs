@@ -27,10 +27,11 @@ internal class BasicConsumer : IConsumer<BasicConsumerMessage>
             Console.WriteLine("{0}: Downloaded", directoryName);
         };
 
-        await ytdlService.Download(message.Asset.Url, $"{directory}/output");
+        var assetPath = $"{directory}/output";
 
-        var filePath = Directory.GetFiles(directory).Where(x => x.Contains("output")).First();
-        using var fileStream = new FileStream(filePath, FileMode.Open);
+        await ytdlService.Download(message.Asset.Url, assetPath, message.Asset.Duration, message.Asset.StartTime);
+
+        using var fileStream = new FileStream(assetPath, FileMode.Open);
 
         var tasks = new List<Task>();
 

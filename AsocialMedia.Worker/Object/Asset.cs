@@ -8,4 +8,8 @@ internal class Asset
     public string Url { get; set; } = string.Empty;
 
     public string? Credit { get; set; } = null;
+    public TimeSpan? Duration { get; set; } = null;
+
+    [JsonProperty(PropertyName = "start_time")]
+    public TimeSpan? StartTime { get; set; } = null;
 }

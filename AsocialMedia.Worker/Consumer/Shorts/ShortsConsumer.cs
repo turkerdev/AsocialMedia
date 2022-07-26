@@ -27,7 +27,7 @@ internal class ShortsConsumer : IConsumer<ShortsConsumerMessage>
             Console.WriteLine("{0}: Downloaded", directoryName);
         };
 
-        await ytdlService.Download(message.Asset.Url, $"{directory}/raw");
+        await ytdlService.Download(message.Asset.Url, $"{directory}/raw", message.Asset.Duration, message.Asset.StartTime);
 
         var rawPath = Directory.GetFiles(directory).Where(x => x.Contains("raw")).First();
 

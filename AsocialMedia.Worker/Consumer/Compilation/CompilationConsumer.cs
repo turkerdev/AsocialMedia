@@ -24,7 +24,7 @@ internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
             ytdlService.Downloaded += (_, _) => YTDL_Downloaded(directoryName);
 
             var assetPath = $"{directory}/asset_{i}";
-            await ytdlService.Download(asset.Url, assetPath);
+            await ytdlService.Download(asset.Url, assetPath, asset.Duration, asset.StartTime);
 
             if (asset.Credit is not null)
             {

@@ -9,20 +9,31 @@ public class YTDLService
     public event EventHandler<YTDLProgressChanged>? ProgressChanged;
     public event EventHandler? Downloaded;
 
-    private static Process CreateDownloadProcess(string url)
+    private static Process CreateProcess(string url)
     {
         var p = new Process();
         p.StartInfo.FileName = YTDLP.fileName;
-        p.StartInfo.Arguments = $@"{url} --ffmpeg-location ""./{FFmpeg.fileName}"" -f ""best[height<=1080]"" -o ";
+        p.StartInfo.Arguments = $@"{url} --ffmpeg-location ""./{FFmpeg.fileName}"" -f ""best[height<=1080]"" ";
         p.StartInfo.RedirectStandardOutput = true;
 
         return p;
     }
 
-    public async Task Download(string url, string outputPath)
+    public async Task Download(string url, string outputPath, TimeSpan? duration = null, TimeSpan? startTime = null)
     {
-        var p = CreateDownloadProcess(url);
-        p.StartInfo.Arguments += @$"""{outputPath}""";
+        var p = CreateProcess(url);
+        if (duration is not null || startTime is not null)
+        {
+            string args = @"--no-part --downloader ffmpeg --external-downloader-args ""ffmpeg_i:";
+            if (duration is not null)
+                args += $"-t {duration} ";
+            if (startTime is not null)
+                args += $"-ss {startTime}";
+
+            p.StartInfo.Arguments += @$"{args}"" ";
+        }
+
+        p.StartInfo.Arguments += @$"-o ""{outputPath}""";
 
         p.OutputDataReceived += (sender, e) =>
         {
@@ -33,7 +44,10 @@ public class YTDLService
 
             var match = pattern.Match(e.Data);
             if (!match.Success)
+            {
+                Console.WriteLine("[UNPARSED]: " + e.Data);
                 return;
+            }
 
             var progress = new YTDLProgressChanged();
             progress.DownloadProgress = float.Parse(match.Groups[1].Value);
