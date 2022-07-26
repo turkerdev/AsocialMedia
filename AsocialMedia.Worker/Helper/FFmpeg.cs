@@ -10,7 +10,7 @@ public static class FFmpeg
     private static readonly string downloadUrl = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
         ? "https://github.com/eugeneware/ffmpeg-static/releases/download/b5.0.1/win32-x64"
         : "https://github.com/eugeneware/ffmpeg-static/releases/download/b5.0.1/linux-x64";
-    private static bool isExist => File.Exists(fileName);
+    private static bool isExist => File.Exists(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? fileName : $"/bin/{fileName}");
 
     public static async Task Download()
     {
@@ -31,6 +31,7 @@ public static class FFmpeg
             p.StartInfo.Arguments = @$"-c ""chmod +x {fileName}""";
             p.Start();
             await p.WaitForExitAsync();
+            File.Move(fileName, $"/bin/{fileName}");
         }
     }
 }

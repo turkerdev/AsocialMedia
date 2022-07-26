@@ -13,27 +13,26 @@ public class YTDLService
     {
         var p = new Process();
         p.StartInfo.FileName = YTDLP.fileName;
-        p.StartInfo.Arguments = $@"{url} --ffmpeg-location ""./{FFmpeg.fileName}"" -f ""best[height<=1080]"" ";
+        p.StartInfo.Arguments = $@"{url}";
+        p.StartInfo.Arguments += @" -f ""bestvideo[height<=1080]*+bestaudio/best[height<=1080]""";
+        p.StartInfo.Arguments += " --no-part";
         p.StartInfo.RedirectStandardOutput = true;
 
         return p;
     }
 
-    public async Task Download(string url, string outputPath, TimeSpan? duration = null, TimeSpan? startTime = null)
+    public async Task Download(string url, string outputPath, TimeSpan? startTime = null, TimeSpan? endTime = null)
     {
         var p = CreateProcess(url);
-        if (duration is not null || startTime is not null)
+        if (endTime is not null || startTime is not null)
         {
-            string args = @"--no-part --downloader ffmpeg --external-downloader-args ""ffmpeg_i:";
-            if (duration is not null)
-                args += $"-t {duration} ";
-            if (startTime is not null)
-                args += $"-ss {startTime}";
-
-            p.StartInfo.Arguments += @$"{args}"" ";
+            var start = startTime.ToString() ?? "0";
+            var end = endTime.ToString() ?? "0";
+            var args = $@" --download-sections ""*{start}-{end}""";
+            p.StartInfo.Arguments += @$" {args}";
         }
 
-        p.StartInfo.Arguments += @$"-o ""{outputPath}""";
+        p.StartInfo.Arguments += @$" -o ""{outputPath}""";
 
         p.OutputDataReceived += (sender, e) =>
         {

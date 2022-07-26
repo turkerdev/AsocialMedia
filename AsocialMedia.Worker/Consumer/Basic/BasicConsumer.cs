@@ -29,7 +29,7 @@ internal class BasicConsumer : IConsumer<BasicConsumerMessage>
 
         var assetPath = $"{directory}/output";
 
-        await ytdlService.Download(message.Asset.Url, assetPath, message.Asset.Duration, message.Asset.StartTime);
+        await ytdlService.Download(message.Asset.Url, assetPath, message.Asset.StartTime, message.Asset.EndTime);
 
         using var fileStream = new FileStream(assetPath, FileMode.Open);
 
