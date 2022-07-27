@@ -14,7 +14,7 @@ public class YTDLService
         var p = new Process();
         p.StartInfo.FileName = YTDLP.fileName;
         p.StartInfo.Arguments = $@"{url}";
-        p.StartInfo.Arguments += @" -f ""bestvideo[height<=1080]*+bestaudio/best[height<=1080]""";
+        p.StartInfo.Arguments += @" -f ""bestvideo*[height<=1080]+bestaudio/best[height<=1080]""";
         p.StartInfo.Arguments += " --no-part";
         p.StartInfo.RedirectStandardOutput = true;
 
