@@ -75,6 +75,8 @@ internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
             video.Status.PrivacyStatus = youtube.Privacy;
             if (youtube.PublishAt is not null)
                 video.Status.PublishAtRaw = youtube.PublishAt;
+            if (youtube.CategoryId is not null)
+                video.Snippet.CategoryId = youtube.CategoryId;
 
             var task = Task.Run(() => Uploader.YouTube.Upload(youtubeService, video, fileStream));
             tasks.Add(task);

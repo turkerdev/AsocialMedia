@@ -12,6 +12,9 @@ internal class YouTube
     public string[]? Tags { get; set; } = null;
     public string Privacy { get; set; } = string.Empty;
 
+    [JsonProperty(PropertyName = "category")]
+    public string? CategoryId { get; set; } = string.Empty;
+
     [JsonProperty(PropertyName = "made_for_kids")]
     public bool MadeForKids { get; set; } = false;
 
