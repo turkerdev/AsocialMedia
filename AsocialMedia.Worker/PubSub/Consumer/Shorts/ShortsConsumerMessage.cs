@@ -1,7 +1,7 @@
 ﻿using AsocialMedia.Worker.Object;
 using Newtonsoft.Json;
 
-namespace AsocialMedia.Worker.Consumer.Shorts;
+namespace AsocialMedia.Worker.PubSub.Consumer.Shorts;
 
 internal class ShortsConsumerMessage
 {

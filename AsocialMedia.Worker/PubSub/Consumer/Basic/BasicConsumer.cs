@@ -1,19 +1,21 @@
-﻿using AsocialMedia.Worker.Service.YTDL;
-using FFMpegCore;
+﻿using AsocialMedia.Worker.PubSub.Consumer;
+using AsocialMedia.Worker.PubSub.Consumer.Basic;
+using AsocialMedia.Worker.Service.YTDL;
 using Google.Apis.YouTube.v3.Data;
 
-namespace AsocialMedia.Worker.Consumer.Shorts;
+namespace AsocialMedia.Worker.PubSub.Consumer.Basic;
 
-internal class ShortsConsumer : IConsumer<ShortsConsumerMessage>
+internal class BasicConsumer : IConsumer<BasicConsumerMessage>
 {
-    public string queueName => "asocialmedia.upload.shorts";
+    public string QueueName => "asocialmedia.upload.basic";
 
-    public async Task Handle(ShortsConsumerMessage message)
+
+    public async Task Handle(BasicConsumerMessage message)
     {
         var directoryName = Guid.NewGuid().ToString();
         var directory = $"assets/{directoryName}";
         Directory.CreateDirectory(directory);
-        Console.WriteLine("Using {0} for {1}", directoryName, queueName);
+        Console.WriteLine("Using {0} for {1}", directoryName, QueueName);
 
         var ytdlService = new YTDLService();
 
@@ -27,19 +29,9 @@ internal class ShortsConsumer : IConsumer<ShortsConsumerMessage>
             Console.WriteLine("{0}: Downloaded", directoryName);
         };
 
-        await ytdlService.Download(message.Asset.Url, $"{directory}/raw", message.Asset.StartTime, message.Asset.EndTime);
+        await ytdlService.Download(message.Asset.Url, $"{directory}/output", message.Asset.StartTime, message.Asset.EndTime);
 
-        var rawPath = Directory.GetFiles(directory).Where(x => x.Contains("raw")).First();
-
-        await FFMpegArguments.FromFileInput(rawPath)
-            .OutputToFile($"{directory}/output", true, opts =>
-            {
-                opts.WithCustomArgument("-vf scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,setsar=1");
-                opts.ForceFormat("mp4");
-            })
-            .ProcessAsynchronously();
-
-        var outputPath = Directory.GetFiles(directory).Where(x => x.Contains("output")).First();
+        var outputPath = Directory.GetFiles(directory).Where(file => file.Contains("output")).First();
         using var fileStream = new FileStream(outputPath, FileMode.Open);
 
         var tasks = new List<Task>();

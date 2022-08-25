@@ -1,19 +1,19 @@
 ﻿using AsocialMedia.Worker.Service.YTDL;
+using FFMpegCore;
 using Google.Apis.YouTube.v3.Data;
 
-namespace AsocialMedia.Worker.Consumer.Basic;
+namespace AsocialMedia.Worker.PubSub.Consumer.Shorts;
 
-internal class BasicConsumer : IConsumer<BasicConsumerMessage>
+internal class ShortsConsumer : IConsumer<ShortsConsumerMessage>
 {
-    public string queueName => "asocialmedia.upload.basic";
+    public string QueueName => "asocialmedia.upload.shorts";
 
-
-    public async Task Handle(BasicConsumerMessage message)
+    public async Task Handle(ShortsConsumerMessage message)
     {
         var directoryName = Guid.NewGuid().ToString();
         var directory = $"assets/{directoryName}";
         Directory.CreateDirectory(directory);
-        Console.WriteLine("Using {0} for {1}", directoryName, queueName);
+        Console.WriteLine("Using {0} for {1}", directoryName, QueueName);
 
         var ytdlService = new YTDLService();
 
@@ -27,9 +27,19 @@ internal class BasicConsumer : IConsumer<BasicConsumerMessage>
             Console.WriteLine("{0}: Downloaded", directoryName);
         };
 
-        await ytdlService.Download(message.Asset.Url, $"{directory}/output", message.Asset.StartTime, message.Asset.EndTime);
+        await ytdlService.Download(message.Asset.Url, $"{directory}/raw", message.Asset.StartTime, message.Asset.EndTime);
 
-        var outputPath = Directory.GetFiles(directory).Where(file => file.Contains("output")).First();
+        var rawPath = Directory.GetFiles(directory).Where(x => x.Contains("raw")).First();
+
+        await FFMpegArguments.FromFileInput(rawPath)
+            .OutputToFile($"{directory}/output", true, opts =>
+            {
+                opts.WithCustomArgument("-vf scale=720:1280:force_original_aspect_ratio=decrease,pad=720:1280:(ow-iw)/2:(oh-ih)/2,setsar=1");
+                opts.ForceFormat("mp4");
+            })
+            .ProcessAsynchronously();
+
+        var outputPath = Directory.GetFiles(directory).Where(x => x.Contains("output")).First();
         using var fileStream = new FileStream(outputPath, FileMode.Open);
 
         var tasks = new List<Task>();

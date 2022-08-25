@@ -2,18 +2,18 @@
 using FFMpegCore;
 using Google.Apis.YouTube.v3.Data;
 
-namespace AsocialMedia.Worker.Consumer.Compilation;
+namespace AsocialMedia.Worker.PubSub.Consumer.Compilation;
 
 internal class CompilationConsumer : IConsumer<CompilationConsumerMessage>
 {
-    public string queueName => "asocialmedia.upload.compilation";
+    public string QueueName => "asocialmedia.upload.compilation";
 
     public async Task Handle(CompilationConsumerMessage message)
     {
         var directoryName = Guid.NewGuid().ToString();
         var directory = $"assets/{directoryName}";
         Directory.CreateDirectory(directory);
-        Console.WriteLine("Using {0} for {1}", directoryName, queueName);
+        Console.WriteLine("Using {0} for {1}", directoryName, QueueName);
 
         for (int i = 0; i < message.Assets.Length; i++)
         {
