@@ -1,6 +1,8 @@
-﻿namespace AsocialMedia.Worker.Object;
+﻿using AsocialMedia.Worker.Object.Platform;
 
-internal class Destination
+namespace AsocialMedia.Worker.Object;
+
+public class Destination
 {
-    public Platform.YouTube[] YouTube { get; set; } = Array.Empty<Platform.YouTube>();
+    public PlatformYouTube[] YouTube { get; set; } = Array.Empty<PlatformYouTube>();
 }

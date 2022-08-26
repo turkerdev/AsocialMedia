@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using AsocialMedia.Worker.PubSub.Consumer;
+using AsocialMedia.Worker.PubSub.Consumer.Basic;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -39,39 +40,42 @@ public class QueueManager
         _channel.BasicQos(0, 1, false);
     }
 
-    public void Subscribe<T>(IConsumer<T> consumer)
+    public void Subscribe<TConsumerMessage, TConsumer>(string queueName, Func<TConsumerMessage,TConsumer> factory)
+        where TConsumerMessage : ConsumerMessage
+        where TConsumer : Consumer<TConsumerMessage>
     {
         if (_channel is null)
             throw new Exception("Can't subscribe to queue. Channel is null");
-        
-        _channel.QueueDeclare(consumer.QueueName, true, false, false);
-        _channel.QueueBind(consumer.QueueName, ExchangeName, consumer.QueueName);
+        _channel.QueueDeclare(queueName, true, false, false);
+        _channel.QueueBind(queueName, ExchangeName, queueName);
 
         var eventConsumer = new EventingBasicConsumer(_channel);
         eventConsumer.Received += async (_, args) =>
         {
-            Logger.Log("{0}: New message", consumer.QueueName);
+            Logger.Log("{0}: New message", queueName);
             var bytes = args.Body.ToArray();
             var body = Encoding.UTF8.GetString(bytes);
-            var message = JsonConvert.DeserializeObject<T>(body);
+            var message = JsonConvert.DeserializeObject<TConsumerMessage>(body);
 
             if (message is null)
-                throw new Exception($"{consumer.QueueName} message deserialization failed, message is null");
+                throw new Exception($"{queueName} message deserialization failed, message is null");
 
             try
             {
-                await consumer.Handle(message);
-                Logger.Log("{0}: Successfully handled", consumer.QueueName);
+                var consumer = factory(message);
+                await consumer.Consume();
+                consumer.CleanUp();
                 _channel.BasicAck(args.DeliveryTag, false);
+                Logger.Log("{0}: Successfully handled", queueName);
             }
             catch (Exception e)
             {
-                Logger.Error("{0}: Error handling message: {1}", consumer.QueueName, e.Message);
                 _channel.BasicNack(args.DeliveryTag, false, true);
+                Logger.Error("{0}: Error handling message: {1}", queueName, e.Message);
             }
         };
         
-        _channel.BasicConsume(consumer.QueueName, false, eventConsumer);
-        Logger.Log("Started consuming {0}", consumer.QueueName);
+        _channel.BasicConsume(queueName, false, eventConsumer);
+        Logger.Log("Started consuming {0}", queueName);
     }
 }

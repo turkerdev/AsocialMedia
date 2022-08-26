@@ -2,11 +2,17 @@
 
 namespace AsocialMedia.Worker.Object.Platform;
 
-internal class YouTube
+public class PlatformYouTube
 {
     [JsonProperty(Required = Required.Always)]
-    public YouTubeAccount Account = new();
+    public AccountYouTube Account = new();
 
+    [JsonProperty(Required = Required.Always)]
+    public VideoYouTube Video = new();
+}
+
+public class VideoYouTube
+{
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; } = null;
     public string[]? Tags { get; set; } = null;
@@ -22,7 +28,7 @@ internal class YouTube
     public string? PublishAt { get; set; } = null;
 }
 
-internal class YouTubeAccount
+public class AccountYouTube
 {
     [JsonProperty(PropertyName = "access_token", Required = Required.Always)]
     public string AccessToken { get; set; } = string.Empty;
