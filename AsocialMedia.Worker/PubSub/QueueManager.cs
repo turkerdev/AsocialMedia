@@ -12,8 +12,8 @@ public class QueueManager
     private readonly ConnectionFactory _factory;
     private IConnection? _connection;
     private IModel? _channel;
-    private const string ExchangeName = "asocialmedia.upload.exchange";
-    
+    private const string ExchangeUploadDirect = "ezupload.upload.direct";
+
     public QueueManager()
     {
         _factory = new ConnectionFactory { Uri = new Uri(ConfigManager.Get.RabbitMq.Url) };
@@ -21,61 +21,92 @@ public class QueueManager
 
     public void Connect()
     {
-        if (_factory is null)
-            throw new Exception("Can't connect to queue. Factory is null");
-            
         _connection = _factory.CreateConnection();
-        
-        _connection.ConnectionBlocked += (_, args) => 
+
+        _connection.ConnectionBlocked += (_, args) =>
             Logger.Log($"Queue connection blocked: {args.Reason}");
-        
-        _connection.ConnectionShutdown += (_, args) => 
+
+        _connection.ConnectionShutdown += (_, args) =>
             Logger.Log($"Queue connection shutdown: {args.ReplyText}");
-        
-        _connection.ConnectionUnblocked += (_, _) => 
+
+        _connection.ConnectionUnblocked += (_, _) =>
             Logger.Log("Queue connection unblocked");
 
         _channel = _connection.CreateModel();
-        _channel.ExchangeDeclare(ExchangeName, "topic", true);
         _channel.BasicQos(0, 1, false);
+        _channel.ExchangeDeclare(ExchangeUploadDirect, "direct", true);
+        _channel.ExchangeDeclare(ExchangeUploadDirect + ".dead", "direct", true);
     }
 
-    public void Subscribe<TConsumerMessage, TConsumer>(string queueName, Func<TConsumerMessage,TConsumer> factory)
+    public void Subscribe<TConsumer, TConsumerMessage>(string queueName)
         where TConsumerMessage : ConsumerMessage
-        where TConsumer : Consumer<TConsumerMessage>
+        where TConsumer : Consumer<TConsumerMessage>, new()
     {
         if (_channel is null)
             throw new Exception("Can't subscribe to queue. Channel is null");
-        _channel.QueueDeclare(queueName, true, false, false);
-        _channel.QueueBind(queueName, ExchangeName, queueName);
+
+        // Dead letter queue
+        _channel.QueueDeclare(queueName + ".dead", true, false, false);
+        _channel.QueueBind(queueName + ".dead", ExchangeUploadDirect + ".dead", queueName + ".dead");
+
+        // Regular queue
+        var args = new Dictionary<string, object>
+        {
+            { "x-dead-letter-exchange", ExchangeUploadDirect + ".dead" },
+            { "x-dead-letter-routing-key", queueName + ".dead" }
+        };
+
+        _channel.QueueDeclare(queueName, true, false, false, args);
+        _channel.QueueBind(queueName, ExchangeUploadDirect, queueName);
 
         var eventConsumer = new EventingBasicConsumer(_channel);
-        eventConsumer.Received += async (_, args) =>
-        {
-            Logger.Log("{0}: New message", queueName);
-            var bytes = args.Body.ToArray();
-            var body = Encoding.UTF8.GetString(bytes);
-            var message = JsonConvert.DeserializeObject<TConsumerMessage>(body);
 
-            if (message is null)
-                throw new Exception($"{queueName} message deserialization failed, message is null");
+        eventConsumer.Received += async (_, deliverArgs) =>
+            await EventConsumerOnReceived<TConsumer, TConsumerMessage>(deliverArgs, queueName);
 
-            try
-            {
-                var consumer = factory(message);
-                await consumer.Consume();
-                consumer.CleanUp();
-                _channel.BasicAck(args.DeliveryTag, false);
-                Logger.Log("{0}: Successfully handled", queueName);
-            }
-            catch (Exception e)
-            {
-                _channel.BasicNack(args.DeliveryTag, false, true);
-                Logger.Error("{0}: Error handling message: {1}", queueName, e.Message);
-            }
-        };
-        
         _channel.BasicConsume(queueName, false, eventConsumer);
-        Logger.Log("Started consuming {0}", queueName);
+        Logger.Log($"Started consuming {queueName}");
+    }
+
+    private async Task EventConsumerOnReceived<TConsumer, TConsumerMessage>(BasicDeliverEventArgs deliverArgs, string queueName)
+        where TConsumerMessage : ConsumerMessage
+        where TConsumer : Consumer<TConsumerMessage>, new()
+    {
+        if (_channel is null)
+            throw new Exception("Cannot consume the message. Channel is null");
+        
+        Logger.Log($"[{queueName}]: New message received");
+        try
+        {
+            await Consume<TConsumer, TConsumerMessage>(deliverArgs);
+            _channel.BasicAck(deliverArgs.DeliveryTag, false);
+            Logger.Log($"[{queueName}]: Successfully acknowledged");
+        }
+        catch (Exception e)
+        {
+            _channel.BasicReject(deliverArgs.DeliveryTag, false);
+            Logger.Log($"[{queueName}]: Rejected: '{e.Message}'");
+        }
+    }
+
+    private T ParseMessage<T>(ReadOnlyMemory<byte> memory) where T : ConsumerMessage
+    {
+        var bytes = memory.ToArray();
+        var body = Encoding.UTF8.GetString(bytes);
+        var message = JsonConvert.DeserializeObject<T>(body);
+
+        if (message is null)
+            throw new Exception("Failed to deserialize the message");
+
+        return message;
+    }
+
+    private async Task Consume<TConsumer, TConsumerMessage>(BasicDeliverEventArgs deliverArgs)
+        where TConsumerMessage : ConsumerMessage
+        where TConsumer : Consumer<TConsumerMessage>, new()
+    {
+        using var consumer = new TConsumer();
+        var message = ParseMessage<TConsumerMessage>(deliverArgs.Body);
+        await consumer.Consume(message);
     }
 }

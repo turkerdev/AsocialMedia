@@ -6,11 +6,7 @@ namespace AsocialMedia.Worker.PubSub.Consumer.Basic;
 
 internal class BasicConsumer : Consumer<BasicConsumerMessage>
 {
-    public BasicConsumer(BasicConsumerMessage message) : base(message)
-    {
-    }
-    
-    public override async Task Consume()
+    public override async Task Consume(BasicConsumerMessage message)
     {
         var ytdlService = new YTDLService();
 
@@ -21,18 +17,18 @@ internal class BasicConsumer : Consumer<BasicConsumerMessage>
             Logger.Log("{0}: Downloaded", AssetId);
 
         await ytdlService.Download(
-            Message.Asset.Url, 
+            message.Asset.Url, 
             $"{AssetDir}/output",
-            Message.Asset.StartTime, 
-            Message.Asset.EndTime
+            message.Asset.StartTime, 
+            message.Asset.EndTime
         );
 
-        var outputPath = Directory.GetFiles(AssetDir).Where(file => file.Contains("output")).First();
+        var outputPath = Directory.GetFiles(AssetDir).First(file => file.Contains("output"));
         await using var fileStream = new FileStream(outputPath, FileMode.Open);
 
         var tasks = new List<IUploaderService>();
         
-        foreach (var youtube in Message.Destination.YouTube)
+        foreach (var youtube in message.Destination.YouTube)
         {
             var youtubeService = new YouTubeUploaderService();
             youtubeService.Login(youtube.Account);

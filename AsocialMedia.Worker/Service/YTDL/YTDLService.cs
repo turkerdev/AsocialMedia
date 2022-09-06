@@ -44,7 +44,7 @@ public class YTDLService
             var match = pattern.Match(e.Data);
             if (!match.Success)
             {
-                Console.WriteLine("[UNPARSED]: " + e.Data);
+                // Console.WriteLine("[UNPARSED]: " + e.Data);
                 return;
             }
 

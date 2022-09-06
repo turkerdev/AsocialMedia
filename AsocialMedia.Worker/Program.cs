@@ -17,19 +17,16 @@ class Program
 
         var queueManager = new QueueManager();
         queueManager.Connect();
-        queueManager.Subscribe<BasicConsumerMessage,BasicConsumer>(
-            "asocialmedia.upload.basic", 
-            (message) => new BasicConsumer(message)
-        );
-        queueManager.Subscribe<ShortsConsumerMessage,ShortsConsumer>(
-            "asocialmedia.upload.shorts", 
-            (message) => new ShortsConsumer(message)
-        ); 
-        queueManager.Subscribe<CompilationConsumerMessage,CompilationConsumer>(
-            "asocialmedia.upload.compilation", 
-            (message) => new CompilationConsumer(message)
-        );
-        
+        queueManager.Subscribe<BasicConsumer, BasicConsumerMessage>("ezupload.upload.basic");
+        // queueManager.Subscribe<ShortsConsumerMessage,ShortsConsumer>(
+        //     "asocialmedia.upload.shorts", 
+        //     (message) => new ShortsConsumer(message)
+        // ); 
+        // queueManager.Subscribe<CompilationConsumerMessage,CompilationConsumer>(
+        //     "asocialmedia.upload.compilation", 
+        //     (message) => new CompilationConsumer(message)
+        // );
+
         Logger.Log("Waiting...");
         Thread.Sleep(Timeout.Infinite);
     }
