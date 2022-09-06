@@ -2,36 +2,44 @@
 
 public class AssetManager
 {
-    private static bool _isInitialized = false;
-    private const string Path = "assets";
-    
-    public static void Initialize()
+    private const string Root = "assets";
+
+    static AssetManager()
     {
-        var isExist = Directory.Exists(Path);
-        
+        var isExist = Directory.Exists(Root);
+
         if (isExist)
-            Directory.Delete(Path, true);
-        
-        Directory.CreateDirectory(Path);
-        _isInitialized = true;
+            Directory.Delete(Root, true);
+
+        Directory.CreateDirectory(Root);
     }
 
-    public static (string, string) CreateOne()
+    public static string CreateResource()
     {
-        if(!_isInitialized)
-            throw new Exception("AssetManager is not initialized");
-            
-        var directoryName = Guid.NewGuid().ToString();
-        var directory = $"{Path}/{directoryName}";
-        Directory.CreateDirectory(directory);
-        return (directory, directoryName);
+        var resourceId = Guid.NewGuid().ToString();
+        return resourceId;
     }
 
-    public static void DeleteOne(string path)
+    public static string CreateResourceGroup()
     {
-        if(!_isInitialized)
-            throw new Exception("AssetManager is not initialized");
-        
-        Directory.Delete(path, true);
+        var resourceGroupId = Guid.NewGuid().ToString();
+        var resourceGroupPath = GetResourceGroupById(resourceGroupId);
+        Directory.CreateDirectory(resourceGroupPath);
+        return resourceGroupId;
+    }
+
+    public static void DeleteResourceGroupById(string resourceGroupId)
+    {
+        Directory.Delete($"{Root}/{resourceGroupId}", true);
+    }
+
+    public static string GetResourceGroupById(string resourceGroupId)
+    {
+        return $"{Root}/{resourceGroupId}";
+    }
+
+    public static string GetResourceById(string resourceGroupId, string resourceId)
+    {
+        return $"{GetResourceGroupById(resourceGroupId)}/{resourceId}";
     }
 }

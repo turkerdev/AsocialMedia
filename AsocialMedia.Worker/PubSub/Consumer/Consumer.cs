@@ -5,19 +5,16 @@ namespace AsocialMedia.Worker.PubSub.Consumer;
 
 public abstract class Consumer<T> : IDisposable where T : ConsumerMessage
 {
-    protected string AssetDir { get; }
-    protected string AssetId { get; }
+    protected string ResourceGroupId { get; }
 
     protected Consumer()
     {
-        var (assetDir, assetId) = AssetManager.CreateOne();
-        AssetDir = assetDir;
-        AssetId = assetId;
+        ResourceGroupId = AssetManager.CreateResourceGroup();
     }
 
     public void Dispose()
     {
-        AssetManager.DeleteOne(AssetDir);
+        AssetManager.DeleteResourceGroupById(ResourceGroupId);
     }
 
     public abstract Task Consume(T message);

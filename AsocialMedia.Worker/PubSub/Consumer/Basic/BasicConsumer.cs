@@ -8,23 +8,25 @@ internal class BasicConsumer : Consumer<BasicConsumerMessage>
 {
     public override async Task Consume(BasicConsumerMessage message)
     {
+        var resourceId = AssetManager.CreateResource();
+        var resourcePath = AssetManager.GetResourceById(ResourceGroupId, resourceId);
+        
         var ytdlService = new YTDLService();
 
         ytdlService.ProgressChanged += (_, args) =>
             Logger.Log("{0}% of {1}, {2}/s, ~{3}", args.DownloadProgress, args.TotalSize, args.DownloadSpeed, args.ETA);
         
         ytdlService.Downloaded += (_, _) =>
-            Logger.Log("{0}: Downloaded", AssetId);
+            Logger.Log("{0}: Downloaded", resourceId);
 
         await ytdlService.Download(
             message.Asset.Url, 
-            $"{AssetDir}/output",
+            resourcePath,
             message.Asset.StartTime, 
             message.Asset.EndTime
         );
 
-        var outputPath = Directory.GetFiles(AssetDir).First(file => file.Contains("output"));
-        await using var fileStream = new FileStream(outputPath, FileMode.Open);
+        await using var fileStream = new FileStream(resourcePath, FileMode.Open);
 
         var tasks = new List<IUploaderService>();
         

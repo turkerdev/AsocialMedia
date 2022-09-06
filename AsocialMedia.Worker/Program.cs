@@ -12,9 +12,7 @@ class Program
     private static void Main(string[] args)
     {
         Task.WaitAll(YTDLP.Download(), FFmpeg.Download(), FFprobe.Download());
-
-        AssetManager.Initialize();
-
+        
         var queueManager = new QueueManager();
         queueManager.Connect();
         queueManager.Subscribe<BasicConsumer, BasicConsumerMessage>("ezupload.upload.basic");
