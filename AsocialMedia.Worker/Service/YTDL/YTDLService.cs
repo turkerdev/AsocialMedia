@@ -34,7 +34,7 @@ public class YTDLService
             p.StartInfo.ArgumentList.Add($"--download-sections \"*{start}-{end}\"");
         }
 
-        p.StartInfo.ArgumentList.Add($"-o {outputPath}");
+        p.StartInfo.ArgumentList.Add($"-o{outputPath}");
 
         p.Start();
         p.BeginOutputReadLine();
