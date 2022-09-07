@@ -1,5 +1,5 @@
-﻿using AsocialMedia.Worker.Service.Uploader;
-using AsocialMedia.Worker.Service.YTDL;
+﻿using AsocialMedia.Worker.Service;
+using AsocialMedia.Worker.Service.Uploader;
 using Google.Apis.YouTube.v3.Data;
 
 namespace AsocialMedia.Worker.PubSub.Consumer.Basic;
@@ -8,22 +8,14 @@ internal class BasicConsumer : Consumer<BasicConsumerMessage>
 {
     public override async Task Consume(BasicConsumerMessage message)
     {
-        var resourceId = AssetManager.CreateResource();
+        var downloadService = new DownloadService(message.Asset, ResourceGroupId);
+        var resourceId = await downloadService.DownloadAsync();
         var resourcePath = AssetManager.GetResourceById(ResourceGroupId, resourceId);
-        
-        var ytdlService = new YTDLService();
-
-        await ytdlService.Download(
-            message.Asset.Url, 
-            resourcePath,
-            message.Asset.StartTime, 
-            message.Asset.EndTime
-        );
 
         await using var fileStream = new FileStream(resourcePath, FileMode.Open);
 
         var tasks = new List<IUploaderService>();
-        
+
         foreach (var youtube in message.Destination.YouTube)
         {
             var youtubeService = new YouTubeUploaderService();
@@ -33,7 +25,7 @@ internal class BasicConsumer : Consumer<BasicConsumerMessage>
 
             tasks.Add(youtubeService);
         }
-        
+
         foreach (var task in tasks)
             await task.UploadVideoAsync();
     }
