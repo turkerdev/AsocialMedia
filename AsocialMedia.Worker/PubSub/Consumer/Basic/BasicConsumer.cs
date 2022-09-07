@@ -13,12 +13,6 @@ internal class BasicConsumer : Consumer<BasicConsumerMessage>
         
         var ytdlService = new YTDLService();
 
-        ytdlService.ProgressChanged += (_, args) =>
-            Logger.Log("{0}% of {1}, {2}/s, ~{3}", args.DownloadProgress, args.TotalSize, args.DownloadSpeed, args.ETA);
-        
-        ytdlService.Downloaded += (_, _) =>
-            Logger.Log("{0}: Downloaded", resourceId);
-
         await ytdlService.Download(
             message.Asset.Url, 
             resourcePath,

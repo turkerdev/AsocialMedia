@@ -3,7 +3,8 @@ using AsocialMedia.Worker.Service.Uploader;
 
 namespace AsocialMedia.Worker.PubSub.Consumer;
 
-public abstract class Consumer<T> : IDisposable where T : ConsumerMessage
+public abstract class Consumer<T> : IDisposable
+    where T : ConsumerMessage
 {
     protected string ResourceGroupId { get; }
 
@@ -18,21 +19,4 @@ public abstract class Consumer<T> : IDisposable where T : ConsumerMessage
     }
 
     public abstract Task Consume(T message);
-
-    // public List<IUploaderService> CreateUploadServices(Destination destination, Stream stream)
-    // {
-    //     var tasks = new List<IUploaderService>();
-    //
-    //     foreach (var youtube in destination.YouTube)
-    //     {
-    //         var youtubeService = new YouTubeUploaderService();
-    //         youtubeService.Login(youtube.Account);
-    //         youtubeService.CreateVideo(youtube.Video);
-    //         youtubeService.AddSource(stream);
-    //
-    //         tasks.Add(youtubeService);
-    //     }
-    //
-    //     return tasks;
-    // }
 }

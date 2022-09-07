@@ -1,67 +1,43 @@
-﻿using AsocialMedia.Worker.Helper;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 namespace AsocialMedia.Worker.Service.YTDL;
 
 public class YTDLService
 {
-    public event EventHandler<YTDLProgressChanged>? ProgressChanged;
-    public event EventHandler? Downloaded;
-
     private static Process CreateProcess(string url)
     {
         var p = new Process();
-        p.StartInfo.FileName = YTDLP.fileName;
-        p.StartInfo.Arguments = $@"{url}";
-        p.StartInfo.Arguments += @" -f ""bestvideo*[height<=1080]+bestaudio/best[height<=1080]""";
-        p.StartInfo.Arguments += " --no-part";
+        p.StartInfo.FileName = "ytdlp";
+        p.StartInfo.ArgumentList.Add(url);
+        p.StartInfo.ArgumentList.Add("-f bestvideo*[height<=1080]+bestaudio/best[height<=1080]");
+        p.StartInfo.ArgumentList.Add("--no-part");
         p.StartInfo.RedirectStandardOutput = true;
 
+        p.OutputDataReceived += (_, args) =>
+        {
+            if (args.Data is not null)
+                Logger.Log(args.Data);
+        };
+        
         return p;
     }
 
     public async Task Download(string url, string outputPath, string? startTime = null, string? endTime = null)
     {
         var p = CreateProcess(url);
+        
         if (endTime is not null || startTime is not null)
         {
             var start = startTime ?? "0";
             var end = endTime ?? "0";
-            var args = $@" --download-sections ""*{start}-{end}""";
-            p.StartInfo.Arguments += @$" {args}";
+            p.StartInfo.ArgumentList.Add($"--download-sections \"*{start}-{end}\"");
         }
 
-        p.StartInfo.Arguments += @$" -o ""{outputPath}""";
-
-        p.OutputDataReceived += (sender, e) =>
-        {
-            if (e.Data is null)
-                return;
-
-            var pattern = new Regex(@"^\[download]\s+(\d+\.\d)% of ((?:\d+\.\d+)(?:K|M|B|G)iB) at\s+((?:\d+\.\d+)(?:K|M|B|G)iB)\/s ETA (\d+:\d+)$");
-
-            var match = pattern.Match(e.Data);
-            if (!match.Success)
-            {
-                // Console.WriteLine("[UNPARSED]: " + e.Data);
-                return;
-            }
-
-            var progress = new YTDLProgressChanged();
-            progress.DownloadProgress = float.Parse(match.Groups[1].Value);
-            progress.TotalSize = match.Groups[2].Value;
-            progress.DownloadSpeed = match.Groups[3].Value;
-            progress.ETA = TimeSpan.ParseExact(match.Groups[4].Value, @"mm\:ss", null);
-
-            ProgressChanged?.Invoke(this, progress);
-        };
+        p.StartInfo.ArgumentList.Add($"-o {outputPath}");
 
         p.Start();
         p.BeginOutputReadLine();
         await p.WaitForExitAsync();
-
-        Downloaded?.Invoke(this, EventArgs.Empty);
     }
 }
-
