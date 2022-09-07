@@ -1,5 +1,4 @@
 ﻿using AsocialMedia.Worker.Object;
-using AsocialMedia.Worker.Service.Uploader;
 
 namespace AsocialMedia.Worker.PubSub.Consumer;
 

@@ -1,4 +1,5 @@
-﻿using AsocialMedia.Worker.Object.Platform;
+﻿using AsocialMedia.Worker.Object;
+using AsocialMedia.Worker.Object.Platform;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Responses;
@@ -7,20 +8,24 @@ using Google.Apis.Upload;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 
-namespace AsocialMedia.Worker.Service.Uploader;
+namespace AsocialMedia.Worker.Uploader;
 
-public class YouTubeUploaderService : IUploaderService
+public class YoutubeUploader : IBaseUploader
 {
-    private YouTubeService? _youtubeService;
-    private Video? _video;
-    private Stream? _stream;
+    private Video Video { get; }
+    private YouTubeService YouTubeService { get; }
+    private Stream Stream { get; }
     
-    public async Task UploadVideoAsync()
+    public YoutubeUploader(AccountYouTube account, VideoYouTube video, string resourcePath)
     {
-        if(_video is null  || _youtubeService is null || _stream is null)
-            throw new Exception("No video or stream or youtube service found");
+        YouTubeService = Login(account);
+        Video = CreateVideo(video);
+        Stream = new FileStream(resourcePath, FileMode.Open);
+    }
 
-        var videosInsertRequest = _youtubeService.Videos.Insert(_video, "snippet,status", _stream, "video/*");
+    public async Task UploadAsync()
+    {
+        var videosInsertRequest = YouTubeService.Videos.Insert(Video, "snippet,status", Stream, "video/*");
         videosInsertRequest.ChunkSize = ResumableUpload.MinimumChunkSize;
 
         videosInsertRequest.ProgressChanged += (progress) =>
@@ -38,7 +43,7 @@ public class YouTubeUploaderService : IUploaderService
                     break;
                 case UploadStatus.Failed:
                     Logger.Log("YouTube: An error prevented the upload from completing.\n{0}", progress.Exception);
-                    break;
+                    throw progress.Exception;
                 case UploadStatus.NotStarted:
                     Logger.Log("YouTube: The upload has not started.");
                     break;
@@ -46,40 +51,10 @@ public class YouTubeUploaderService : IUploaderService
         };
 
         await videosInsertRequest.UploadAsync();
+        await Stream.DisposeAsync();
     }
 
-    public void AddSource(Stream stream)
-    {
-        _stream = stream;
-    }
-    
-    public void CreateVideo(VideoYouTube video)
-    {
-        var snippet = new VideoSnippet
-        {
-            Title = video.Title,
-            Description = video.Description,
-            Tags = video.Tags,
-            CategoryId = video.CategoryId,
-        };
-
-        var status = new VideoStatus
-        {
-            MadeForKids = video.MadeForKids,
-            PrivacyStatus = video.Privacy,
-            PublishAtRaw = video.PublishAt
-        };
-        
-        var v = new Video
-        {
-            Snippet = snippet,
-            Status = status
-        };
-
-        _video = v;
-    }
-    
-    public void Login(AccountYouTube account)
+    private YouTubeService Login(AccountYouTube account)
     {
         var secrets = new ClientSecrets
         {
@@ -112,6 +87,30 @@ public class YouTubeUploaderService : IUploaderService
             HttpClientInitializer = credential,
         });
 
-        _youtubeService = youtubeService;
+        return youtubeService;
+    }
+    
+    private Video CreateVideo(VideoYouTube video)
+    {
+        var snippet = new VideoSnippet
+        {
+            Title = video.Title,
+            Description = video.Description,
+            Tags = video.Tags,
+            CategoryId = video.CategoryId,
+        };
+
+        var status = new VideoStatus
+        {
+            MadeForKids = video.MadeForKids,
+            PrivacyStatus = video.Privacy,
+            PublishAtRaw = video.PublishAt
+        };
+        
+        return new Video
+        {
+            Snippet = snippet,
+            Status = status
+        };
     }
 }
