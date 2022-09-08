@@ -8,11 +8,12 @@ public class UploadService
 {
     private List<IBaseUploader> ListUploader { get; } = new();
 
-    public UploadService(Destination destination, string resourcePath)
+    public UploadService(Destination destination, string resourceGroupId, string resourceId)
     {
         foreach (var youtube in destination.YouTube)
         {
-            var youtubeService = new YoutubeUploader(youtube.Account, youtube.Video, resourcePath);
+            var resource = AssetManager.GetResource(resourceGroupId, resourceId);
+            var youtubeService = new YoutubeUploader(youtube.Account, youtube.Video, resource);
             ListUploader.Add(youtubeService);
         }
     }

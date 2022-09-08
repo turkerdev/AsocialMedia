@@ -9,7 +9,7 @@ public class YtdlDownloader : BaseDownloader
 
     public YtdlDownloader(Asset asset, string resourceGroupId)
     {
-        Logger.Log("{0}: New resource", AssetManager.GetResourceById(resourceGroupId, ResourceId));
+        Logger.Log("{0}: New resource", AssetManager.GetResourcePathById(resourceGroupId, ResourceId));
         _process = new Process();
         _process.StartInfo.RedirectStandardOutput = true;
         _process.StartInfo.FileName = "ytdlp";
@@ -30,7 +30,7 @@ public class YtdlDownloader : BaseDownloader
         }
 
         _process.StartInfo.ArgumentList.Add("-o");
-        _process.StartInfo.ArgumentList.Add(AssetManager.GetResourceById(resourceGroupId, ResourceId));
+        _process.StartInfo.ArgumentList.Add(AssetManager.GetResourcePathById(resourceGroupId, ResourceId));
 
         _process.OutputDataReceived += (_, args) =>
         {

@@ -8,9 +8,8 @@ internal class BasicConsumer : Consumer<BasicConsumerMessage>
     {
         var downloadService = new DownloadService(message.Asset, ResourceGroupId);
         var resourceId = await downloadService.DownloadAsync();
-        var resourcePath = AssetManager.GetResourceById(ResourceGroupId, resourceId);
 
-        var uploadService = new UploadService(message.Destination, resourcePath);
+        var uploadService = new UploadService(message.Destination, ResourceGroupId, resourceId);
         await uploadService.UploadAsync();
     }
 }

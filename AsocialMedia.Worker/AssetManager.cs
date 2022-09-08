@@ -38,8 +38,14 @@ public class AssetManager
         return $"{Root}/{resourceGroupId}";
     }
 
-    public static string GetResourceById(string resourceGroupId, string resourceId)
+    public static string GetResourcePathById(string resourceGroupId, string resourceId)
     {
         return $"{GetResourceGroupById(resourceGroupId)}/{resourceId}";
+    }
+
+    public static string GetResource(string resourceGroupId, string resourceId)
+    {
+        var resourceGroupPath = GetResourceGroupById(resourceGroupId);
+        return Directory.GetFiles(resourceGroupPath).First(file => file.Contains(resourceId));
     }
 }
