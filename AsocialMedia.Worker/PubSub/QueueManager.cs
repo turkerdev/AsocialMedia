@@ -33,7 +33,7 @@ public class QueueManager
             Logger.Log("Queue connection unblocked");
 
         _channel = _connection.CreateModel();
-        _channel.BasicQos(0, 1, false);
+        _channel.BasicQos(0, 1, true);
         _channel.ExchangeDeclare(ExchangeUploadDirect, "direct", true);
         _channel.ExchangeDeclare(ExchangeUploadDirect + ".dead", "direct", true);
     }
