@@ -1,0 +1,8 @@
+services:
+  shutter:
+    build: 
+      context: .
+      dockerfile: src/shutter/Dockerfile
+    restart: unless-stopped
+    ports:
+      - 5555:5555
