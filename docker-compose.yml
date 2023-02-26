@@ -1,0 +1,20 @@
+services:
+  shutter:
+    build: 
+      context: .
+      dockerfile: src/shutter/Dockerfile
+    restart: unless-stopped
+    ports:
+      - 5555:5555
+    environment:
+      - BUCKET_URL=http://bucketservice:9000
+      - BUCKET_KEY=minioadmin
+      - BUCKET_SECRET=minioadmin
+
+  bucketservice:
+    image: minio/minio
+    restart: unless-stopped
+    ports:
+      - 9000:9000
+      - 9001:9001
+    command: server /data --console-address ":9001"

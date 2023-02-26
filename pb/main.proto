@@ -1,0 +1,29 @@
+syntax = "proto3";
+package turkerdev;
+
+service Ping {
+  rpc Ping (PingRequest) returns (PingResponse);
+}
+
+message PingRequest {
+  string message = 1;
+}
+
+message PingResponse {
+  string message = 1;
+}
+
+service Shutter {
+  rpc Screenshot (ScreenshotRequest) returns (ScreenshotResponse);
+}
+
+message ScreenshotRequest {
+  string url = 1;
+  string selector = 2;
+  optional string textSelector = 3;
+}
+
+message ScreenshotResponse {
+  string key = 1;
+  optional string text = 2;
+}
