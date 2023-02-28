@@ -21,3 +21,14 @@ s3.send(new CreateBucketCommand({ Bucket: "shutter" })).then(() => {
         throw err
     }
 });
+
+s3.send(new CreateBucketCommand({ Bucket: "tts" })).then(() => {
+    console.log("Bucket 'tts' created");
+}).catch((err) => {
+    if (err instanceof BucketAlreadyOwnedByYou) {
+        console.log("Bucket 'tts' already exists");
+    }
+    else {
+        throw err
+    }
+});

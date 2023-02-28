@@ -2,6 +2,8 @@
 /src/shutter/src/protos
 /src/shutter/dist
 
+.env
+
 # User-specific files
 *.rsuser
 *.suo

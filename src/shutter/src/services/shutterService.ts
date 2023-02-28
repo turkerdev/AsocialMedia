@@ -4,7 +4,7 @@ import { ShutterServer } from '../protos/main';
 import { s3 } from '../s3client';
 import { randomUUID } from 'node:crypto'
 
-export const ShutterServiceImpl: ShutterServer = {
+export const Shutter_ServiceImpl: ShutterServer = {
     screenshot: async ({ request }, callback) => {
         console.log(request)
         const browser = await chromium.launch();
