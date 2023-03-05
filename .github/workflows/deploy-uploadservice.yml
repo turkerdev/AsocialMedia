@@ -1,0 +1,27 @@
+name: Deploy uploadservice
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - src/uploadservice/**
+      - .github/workflows/deploy-uploadservice.yml
+
+env:
+  SERVICE: uploadservice
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+
+      - name: Publish
+        uses: cloudflare/wrangler-action@2.0.0
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          workingDirectory: src/uploadservice
