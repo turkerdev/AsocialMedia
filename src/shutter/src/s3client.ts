@@ -11,22 +11,11 @@ export const s3 = new S3Client({
     region: "auto"
 });
 
-s3.send(new CreateBucketCommand({ Bucket: "shutter" })).then(() => {
-    console.log("Bucket 'shutter' created");
+s3.send(new CreateBucketCommand({ Bucket: "app-bucket" })).then(() => {
+    console.log("Bucket 'app-bucket' created");
 }).catch((err) => {
     if (err instanceof BucketAlreadyOwnedByYou) {
-        console.log("Bucket 'shutter' already exists");
-    }
-    else {
-        throw err
-    }
-});
-
-s3.send(new CreateBucketCommand({ Bucket: "tts" })).then(() => {
-    console.log("Bucket 'tts' created");
-}).catch((err) => {
-    if (err instanceof BucketAlreadyOwnedByYou) {
-        console.log("Bucket 'tts' already exists");
+        console.log("Bucket 'app-bucket' already exists");
     }
     else {
         throw err

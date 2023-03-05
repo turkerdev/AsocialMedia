@@ -40,7 +40,7 @@ internal class YtdlDownloader
 
         var multipart = await s3.InitiateMultipartUploadAsync(new InitiateMultipartUploadRequest
         {
-            BucketName = "ytdl",
+            BucketName = "app-bucket",
             Key = Key
         });
 

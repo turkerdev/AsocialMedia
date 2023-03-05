@@ -26,6 +26,15 @@ services:
       - TTS_REGION=${TTS_REGION}
       - SPEECH_CONDUCT_OCSP_CHECK=0
 
+  uploadservice:
+    build:
+      context: .
+      dockerfile: src/uploadservice/Dockerfile
+    restart: unless-stopped
+    ports:
+      - 8787:8787
+    command: npx miniflare -b BUCKET_URL=http://bucketservice:9000 -b BUCKET_KEY=minioadmin -b BUCKET_SECRET=minioadmin index.js
+
   bucketservice:
     image: minio/minio
     restart: unless-stopped

@@ -20,7 +20,7 @@ export const TTS_ServiceImpl: TTSServer = {
                     const key = randomUUID() + ".wav";
 
                     await s3.send(new PutObjectCommand({
-                        Bucket: "tts",
+                        Bucket: "app-bucket",
                         Key: key,
                         Body: Buffer.from(res.audioData),
                         ContentType: "audio/wav",

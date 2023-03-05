@@ -21,7 +21,7 @@ export const Shutter_ServiceImpl: ShutterServer = {
         const key = randomUUID() + ".png";
 
         await s3.send(new PutObjectCommand({
-            Bucket: "shutter",
+            Bucket: "app-bucket",
             Key: key,
             Body: screenshot,
             ContentType: "image/png",
