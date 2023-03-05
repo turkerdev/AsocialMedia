@@ -72,6 +72,7 @@ internal class YtdlDownloader
                 BucketName = multipart.BucketName,
                 Key = multipart.Key,
                 UploadId = multipart.UploadId,
+                DisablePayloadSigning = true,
                 PartNumber = partNumber,
                 PartSize = bufferPosition,
                 InputStream = new MemoryStream(buffer, 0, bufferPosition)
