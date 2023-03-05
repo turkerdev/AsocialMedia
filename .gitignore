@@ -1,6 +1,7 @@
 # Ignore copied/generated protobuf files
 /src/shutter/src/protos
 /src/shutter/dist
+/src/ytdlservice/Protos
 
 .env
 

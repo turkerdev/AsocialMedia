@@ -2,6 +2,15 @@
 
 base_dir=$(pwd)
 
+gen_proto_dotnet() {
+  echo "Generating .NET protobuf files for $1"
+  cd "$base_dir"/src/"$1" || return
+  rm -rf ./Protos
+  mkdir -p ./Protos/
+  cp -r "$base_dir"/pb/* ./Protos/
+  cd "$base_dir" || return
+}
+
 gen_proto_ts() {
   echo "Generating TypeScript protobuf files for $1"
   image=$(docker build --target typescript -q .)
@@ -16,3 +25,4 @@ gen_proto_ts() {
 }
 
 gen_proto_ts shutter
+gen_proto_dotnet ytdlservice
