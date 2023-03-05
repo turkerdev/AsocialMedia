@@ -23,10 +23,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - run: npm install
+      - run: cd src/${{ env.SERVICE }} && npm install
 
       - name: Publish
         uses: cloudflare/wrangler-action@2.0.0
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
-          workingDirectory: src/uploadservice
+          workingDirectory: src/${{ env.SERVICE }}
