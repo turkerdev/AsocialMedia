@@ -55,12 +55,16 @@ async function handleUpload(request: Request): Promise<Response> {
 	headers.append('Content-Type', file.ContentType || 'video/mp4')
 	headers.append('Authorization', `Bearer ${token}`)
 
-	await fetch(url,
-		{
-			headers,
-			method: 'PUT',
-			body: file.Body.transformToWebStream()
-		})
+	if (file.Body instanceof ReadableStream) {
+		await fetch(url,
+			{
+				headers,
+				method: 'PUT',
+				body: file.Body
+			})
 
-	return new Response("OK", { status: 200 })
+		return new Response("OK", { status: 200 })
+	}
+
+	return new Response("Not implemented", { status: 501 })
 }
