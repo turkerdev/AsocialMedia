@@ -73,7 +73,7 @@ internal class YtdlDownloader
                 Key = multipart.Key,
                 UploadId = multipart.UploadId,
                 DisablePayloadSigning = true,
-                UseChunkEncoding = false,
+                DisableMD5Stream = true,
                 PartNumber = partNumber,
                 PartSize = bufferPosition,
                 InputStream = new MemoryStream(buffer, 0, bufferPosition)
