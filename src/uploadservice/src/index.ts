@@ -2,18 +2,18 @@ import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { z } from 'zod'
 
 addEventListener("fetch", (event) => {
-	event.respondWith(handleRequest(event.request));
+	event.respondWith(handleRequest(event));
 })
 
-async function handleRequest(request: Request): Promise<Response> {
-	const { pathname } = new URL(request.url);
+async function handleRequest(e: FetchEvent): Promise<Response> {
+	const { pathname } = new URL(e.request.url);
 	if (pathname === "/upload") {
-		return await handleUpload(request);
+		return await handleUpload(e);
 	}
 	return new Response("Not found", { status: 404 });
 }
 
-async function handleUpload(request: Request): Promise<Response> {
+async function handleUpload(e: FetchEvent): Promise<Response> {
 	const env = await z.object({
 		BUCKET_URL: z.string(),
 		BUCKET_KEY: z.string(),
@@ -24,7 +24,7 @@ async function handleUpload(request: Request): Promise<Response> {
 		BUCKET_SECRET
 	})
 
-	const json = await request.json();
+	const json = await e.request.json();
 	const { key, token, url } = await z.object({
 		key: z.string(),
 		token: z.string(),
@@ -56,13 +56,7 @@ async function handleUpload(request: Request): Promise<Response> {
 	headers.append('Authorization', `Bearer ${token}`)
 
 	if (file.Body instanceof ReadableStream) {
-		await fetch(url,
-			{
-				headers,
-				method: 'PUT',
-				body: file.Body
-			})
-
+		e.waitUntil(fetch(url, { headers, method: 'PUT', body: file.Body }))
 		return new Response("OK", { status: 200 })
 	}
 
