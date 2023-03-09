@@ -72,7 +72,8 @@ internal class YtdlDownloader
                 BucketName = multipart.BucketName,
                 Key = multipart.Key,
                 UploadId = multipart.UploadId,
-                DisablePayloadSigning = true,
+                // This is a workaround since i can't use self-signed certificates
+                DisablePayloadSigning = ConfigManager.Env.BUCKET_URL.Contains("https"),
                 DisableMD5Stream = true,
                 PartNumber = partNumber,
                 PartSize = bufferPosition,

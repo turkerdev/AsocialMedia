@@ -4,16 +4,12 @@ services:
     build:
       context: .
       dockerfile: src/ytdlservice/Dockerfile
-      target: development
     restart: unless-stopped
     environment:
       - RABBITMQ_URL=amqp://rabbitmqservice:5672
       - BUCKET_URL=http://bucketservice:9000
       - BUCKET_KEY=minioadmin
       - BUCKET_SECRET=minioadmin
-    volumes:
-      - ./src/ytdlservice:/app
-    command: dotnet watch
 
   shutter:
     build: 
