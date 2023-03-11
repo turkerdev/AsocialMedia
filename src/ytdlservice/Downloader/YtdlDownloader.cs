@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using Amazon.S3;
 using Amazon.S3.Model;
+using ytdlservice.Queue;
 
 namespace ytdlservice.Downloader;
 
@@ -16,18 +17,18 @@ internal class YtdlDownloader
             ForcePathStyle = true,
         });
 
-    public static async Task Download(string Key, string Url, string Format, string StartTime, string EndTime)
+    public static async Task Download(BasicMessage message)
     {
         using var process = new Process();
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.RedirectStandardError = true;
         process.StartInfo.FileName = "ytdlp";
-        process.StartInfo.ArgumentList.Add(Url);
+        process.StartInfo.ArgumentList.Add(message.Url);
         process.StartInfo.ArgumentList.Add("-f");
-        process.StartInfo.ArgumentList.Add(Format);
+        process.StartInfo.ArgumentList.Add(message.Format);
         process.StartInfo.ArgumentList.Add("--download-sections");
-        process.StartInfo.ArgumentList.Add($"*{StartTime}-{EndTime}");
+        process.StartInfo.ArgumentList.Add($"*{message.StartTime}-{message.EndTime}");
         process.StartInfo.ArgumentList.Add("--remux-video");
         process.StartInfo.ArgumentList.Add("mp4");
         process.StartInfo.ArgumentList.Add("-o");
@@ -41,7 +42,8 @@ internal class YtdlDownloader
         var multipart = await s3.InitiateMultipartUploadAsync(new InitiateMultipartUploadRequest
         {
             BucketName = "app-bucket",
-            Key = Key
+            Key = message.Id,
+            ContentType = "video/mp4"
         });
 
         var partNumber = 1;
