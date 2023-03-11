@@ -1,4 +1,6 @@
 # Ignore copied/generated protobuf files
+/src/gateway/src/protos
+/src/gateway/dist
 /src/shutter/src/protos
 /src/shutter/dist
 /src/ytdlservice/Protos

@@ -1,5 +1,24 @@
 services:
 
+  gatewayservice:
+    image: node:18-alpine
+    restart: unless-stopped
+    ports:
+      - 6543:6543
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
+      - RABBITMQ_URL=amqp://rabbitmqservice:5672
+      - BUCKET_URL=http://bucketservice:9000
+      - BUCKET_KEY=minioadmin
+      - BUCKET_SECRET=minioadmin
+      - UPLOAD_URL=http://uploadservice:8787
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+    working_dir: /app
+    volumes:
+      - ./src/gateway:/app
+    command: npm run dev
+
   ytdlservice:
     build:
       context: .
@@ -52,3 +71,11 @@ services:
     restart: unless-stopped
     ports:
       - 15672:15672 # web
+
+  postgres:
+    image: postgres:13-alpine
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres

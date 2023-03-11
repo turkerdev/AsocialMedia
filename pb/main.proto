@@ -28,3 +28,32 @@ message SpeakRequest {
 message SpeakResponse {
   string key = 1;
 }
+
+service Resource {
+  rpc New (NewResourceRequest) returns (NewResourceResponse);
+  rpc Download (DownloadResourceRequest) returns (DownloadResourceResponse);
+  rpc Upload (UploadResourceRequest) returns (UploadResourceResponse);
+}
+
+message NewResourceRequest {
+  string url = 1;
+}
+
+message NewResourceResponse {
+  string id = 1;
+}
+
+message DownloadResourceRequest {
+  string id = 1;
+}
+
+message DownloadResourceResponse {
+}
+
+message UploadResourceRequest {
+  string resourceId = 1;
+  repeated string channelId = 2;
+}
+
+message UploadResourceResponse {
+}
