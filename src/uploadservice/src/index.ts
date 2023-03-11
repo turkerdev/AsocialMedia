@@ -29,10 +29,10 @@ async function handleChunk(e: FetchEvent): Promise<Response> {
 		key: z.string(),
 		token: z.string(),
 		url: z.string(),
-		chunksize: z.string(),
-		from: z.string(),
-		to: z.string(),
-		total: z.string()
+		chunksize: z.number(),
+		from: z.number(),
+		to: z.number(),
+		total: z.number()
 	}).parseAsync(json)
 
 	const s3 = new S3Client({
@@ -57,17 +57,19 @@ async function handleChunk(e: FetchEvent): Promise<Response> {
 		const headers = new Headers();
 		headers.append('Content-Type', 'video/*')
 		headers.append('Authorization', `Bearer ${request.token}`)
-		headers.append('Content-Length', request.chunksize)
+		headers.append('Content-Length', `${request.chunksize}`)
 		headers.append('Content-Range', `bytes ${request.from}-${request.to}/${request.total}`)
-		const upload = fetch(request.url, { headers, method: 'PUT', body: file.Body })
-		e.waitUntil(upload.then(async res =>
-			console.log({
-				response: res.status,
-				body: await res.text(),
-				headers: Object.fromEntries(res.headers)
-			})))
 
-		return new Response("OK", { status: 200 })
+		console.log(`Starting to upload. bytes ${request.from}-${request.to}/${request.total}`)
+		const upload = await fetch(request.url, { headers, method: 'PUT', body: file.Body })
+
+		console.log(`Upload status: ${upload.status}`)
+		if (upload.status === 200 || upload.status === 308) {
+			return new Response(undefined, { status: upload.status })
+		}
+
+		console.log(await upload.clone().text())
+		throw new Error("Upload failed")
 	}
 
 	return new Response("Not implemented", { status: 501 })

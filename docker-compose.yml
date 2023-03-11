@@ -31,13 +31,14 @@ services:
       - SPEECH_CONDUCT_OCSP_CHECK=0
 
   uploadservice:
-    build:
-      context: .
-      dockerfile: src/uploadservice/Dockerfile
+    image: node:18-alpine
     restart: unless-stopped
     ports:
       - 8787:8787
-    command: npx miniflare -b BUCKET_URL=http://bucketservice:9000 -b BUCKET_KEY=minioadmin -b BUCKET_SECRET=minioadmin index.js
+    working_dir: /app
+    volumes:
+      - ./src/uploadservice:/app
+    command: npm run dev -- -b BUCKET_URL=http://bucketservice:9000 -b BUCKET_KEY=minioadmin -b BUCKET_SECRET=minioadmin
 
   bucketservice:
     image: minio/minio
