@@ -1,5 +1,15 @@
 services:
 
+  frontend:
+    image: node:18-alpine
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    working_dir: /app
+    volumes:
+      - ./src/frontend:/app
+    command: npm run dev
+
   gatewayservice:
     image: node:18-alpine
     restart: unless-stopped
