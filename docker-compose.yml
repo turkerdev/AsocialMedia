@@ -5,6 +5,9 @@ services:
     restart: unless-stopped
     ports:
       - 3000:3000
+      - 8002:8002
+    environment:
+      - GRPC_RESOURCE_HOST=gatewayservice:6543
     working_dir: /app
     volumes:
       - ./src/frontend:/app

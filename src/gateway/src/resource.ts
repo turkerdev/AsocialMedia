@@ -9,7 +9,7 @@ import s3 from "./s3";
 import * as google from '@googleapis/youtube'
 
 export const resource_Impl: ResourceServer = {
-    new: async (call, callback) => {
+    create: async (call, callback) => {
         const body = await z.object({
             url: z.string().url()
         }).safeParseAsync(call.request)
@@ -37,6 +37,7 @@ export const resource_Impl: ResourceServer = {
             id: resource.id,
             url: resource.url
         }
+        console.log("Sending download request: ", payload)
 
         channel.sendToQueue('dl', Buffer.from(JSON.stringify(payload)))
         await channel.close();
@@ -140,5 +141,14 @@ export const resource_Impl: ResourceServer = {
         }
 
         callback(null, null)
+    },
+    list: async (call, callback) => {
+        const resources = await db.resource.findMany()
+        callback(null, {
+            resources: resources.map(r => ({
+                id: r.id,
+                url: r.url
+            }))
+        })
     }
 }

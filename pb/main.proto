@@ -30,16 +30,17 @@ message SpeakResponse {
 }
 
 service Resource {
-  rpc New (NewResourceRequest) returns (NewResourceResponse);
+  rpc Create (CreateResourceRequest) returns (CreateResourceResponse);
   rpc Download (DownloadResourceRequest) returns (DownloadResourceResponse);
   rpc Upload (UploadResourceRequest) returns (UploadResourceResponse);
+  rpc List (ListResourceRequest) returns (ListResourceResponse);
 }
 
-message NewResourceRequest {
+message CreateResourceRequest {
   string url = 1;
 }
 
-message NewResourceResponse {
+message CreateResourceResponse {
   string id = 1;
 }
 
@@ -56,4 +57,15 @@ message UploadResourceRequest {
 }
 
 message UploadResourceResponse {
+}
+
+message ListResourceRequest {
+}
+
+message ListResourceResponse {
+  message Resource {
+    string id = 1;
+    string url = 2;
+  }
+  repeated Resource resources = 1;
 }

@@ -26,4 +26,5 @@ gen_proto_ts() {
 
 gen_proto_ts shutter
 gen_proto_ts gateway
+gen_proto_ts frontend
 gen_proto_dotnet ytdlservice

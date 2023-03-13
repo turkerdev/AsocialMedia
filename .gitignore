@@ -1,4 +1,5 @@
 # Ignore copied/generated protobuf files
+/src/frontend/src/protos
 /src/gateway/src/protos
 /src/gateway/dist
 /src/shutter/src/protos

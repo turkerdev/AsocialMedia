@@ -2,6 +2,7 @@
 module.exports = {
   future: {
     v2_routeConvention: true,
+    unstable_tailwind: true,
   },
   ignoredRouteFiles: ["**/.*"],
   // When running locally in development mode, we use the built-in remix
