@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "predev": "npm i",
+    "dev": "tsx watch --clear-screen=false src/main.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.10",
+    "tsx": "^3.12.6",
+    "typescript": "^5.0.2"
+  }
+}

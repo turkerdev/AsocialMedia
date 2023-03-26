@@ -48,7 +48,7 @@ services:
     command: dotnet watch
 
   shutter:
-    build: 
+    build:
       context: .
       dockerfile: src/shutter/Dockerfile
     restart: unless-stopped
@@ -72,22 +72,33 @@ services:
       - ./src/uploadservice:/app
     command: npm run dev -- -b BUCKET_URL=http://bucketservice:9000 -b BUCKET_KEY=minioadmin -b BUCKET_SECRET=minioadmin
 
-  bucketservice:
+  browser:
+    container_name: browser
+    build:
+      context: src/browser
+      dockerfile: Dockerfile
+      target: development
+    volumes:
+      - ./src/browser:/app
+    working_dir: /app
+    command: npm run dev
+
+  storage:
+    container_name: storage
     image: minio/minio
-    restart: unless-stopped
     ports:
       - 9001:9001 # web
     command: server /data --console-address ":9001"
 
-  rabbitmqservice:
+  rabbitmq:
+    container_name: rabbitmq
     image: rabbitmq:3-management-alpine
-    restart: unless-stopped
     ports:
       - 15672:15672 # web
 
   postgres:
+    container_name: postgres
     image: postgres:13-alpine
-    restart: unless-stopped
     ports:
       - 5432:5432
     environment:
