@@ -24,7 +24,7 @@ gen_proto_ts() {
   cd "$base_dir" || return
 }
 
-gen_proto_ts shutter
+gen_proto_ts browser
 gen_proto_ts gateway
 gen_proto_ts frontend
 gen_proto_dotnet ytdlservice

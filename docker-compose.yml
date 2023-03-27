@@ -47,21 +47,6 @@ services:
       - ./src/ytdlservice:/app
     command: dotnet watch
 
-  shutter:
-    build:
-      context: .
-      dockerfile: src/shutter/Dockerfile
-    restart: unless-stopped
-    ports:
-      - 5555:5555
-    environment:
-      - BUCKET_URL=http://bucketservice:9000
-      - BUCKET_KEY=minioadmin
-      - BUCKET_SECRET=minioadmin
-      - TTS_KEY=${TTS_KEY}
-      - TTS_REGION=${TTS_REGION}
-      - SPEECH_CONDUCT_OCSP_CHECK=0
-
   uploadservice:
     image: node:18-alpine
     restart: unless-stopped
@@ -81,7 +66,15 @@ services:
     volumes:
       - ./src/browser:/app
     working_dir: /app
+    ports:
+      - 4054:4054
+    environment:
+      - STORAGE_URL=http://storage:9000
+      - STORAGE_KEY=minioadmin
+      - STORAGE_SECRET=minioadmin
     command: npm run dev
+    depends_on:
+      - storage
 
   storage:
     container_name: storage
