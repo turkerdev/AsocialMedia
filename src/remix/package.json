@@ -5,7 +5,7 @@
     "build": "remix build",
     "dev": "remix dev",
     "typecheck": "tsc",
-    "migration:generate": "drizzle-kit generate:pg --out migrations --schema src/db/schema"
+    "migration:generate": "drizzle-kit generate:pg"
   },
   "dependencies": {
     "@remix-run/node": "^1.15.0",

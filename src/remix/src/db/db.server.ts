@@ -10,5 +10,5 @@ const pool = new Pool({
 export const db = drizzle(pool);
 
 (async () => {
-    await migrate(db, { migrationsFolder: "./migrations" })
+    await migrate(db, { migrationsFolder: "migrations" })
 })()
