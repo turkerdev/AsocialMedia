@@ -62,14 +62,17 @@ services:
     build:
       context: src/remix
       dockerfile: Dockerfile
-      target: development
     volumes:
       - ./src/remix:/app
     working_dir: /app
     ports:
       - 3000:3000
       - 8002:8002 # socket
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/remix
     command: npm run dev
+    depends_on:
+      - postgres
 
   browser:
     container_name: browser
