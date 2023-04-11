@@ -32,20 +32,19 @@ services:
   #     - ./src/gateway:/app
   #   command: npm run dev
 
-  # ytdlservice:
-  #   build:
-  #     context: .
-  #     dockerfile: src/ytdlservice/Dockerfile
-  #     target: development
-  #   restart: unless-stopped
-  #   environment:
-  #     - RABBITMQ_URL=amqp://rabbitmqservice:5672
-  #     - BUCKET_URL=http://bucketservice:9000
-  #     - BUCKET_KEY=minioadmin
-  #     - BUCKET_SECRET=minioadmin
-  #   volumes:
-  #     - ./src/ytdlservice:/app
-  #   command: dotnet watch
+  ytdlservice:
+    container_name: ytdlservice
+    build:
+      context: src/ytdlservice
+      dockerfile: Dockerfile
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - S3_URL=http://storage:9000
+      - S3_KEY=minioadmin
+      - S3_SECRET=minioadmin
+    depends_on:
+      - rabbitmq
+      - storage
 
   # uploadservice:
   #   image: node:18-alpine
@@ -62,36 +61,33 @@ services:
     build:
       context: src/remix
       dockerfile: Dockerfile
-    volumes:
-      - ./src/remix:/app
     working_dir: /app
     ports:
       - 3000:3000
-      - 8002:8002 # socket
     environment:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/remix
     command: npm run dev
     depends_on:
       - postgres
 
-  browser:
-    container_name: browser
-    build:
-      context: src/browser
-      dockerfile: Dockerfile
-      target: development
-    volumes:
-      - ./src/browser:/app
-    working_dir: /app
-    ports:
-      - 4054:4054
-    environment:
-      - STORAGE_URL=http://storage:9000
-      - STORAGE_KEY=minioadmin
-      - STORAGE_SECRET=minioadmin
-    command: npm run dev
-    depends_on:
-      - storage
+  # browser:
+  #   container_name: browser
+  #   build:
+  #     context: src/browser
+  #     dockerfile: Dockerfile
+  #     target: development
+  #   volumes:
+  #     - ./src/browser:/app
+  #   working_dir: /app
+  #   ports:
+  #     - 4054:4054
+  #   environment:
+  #     - STORAGE_URL=http://storage:9000
+  #     - STORAGE_KEY=minioadmin
+  #     - STORAGE_SECRET=minioadmin
+  #   command: npm run dev
+  #   depends_on:
+  #     - storage
 
   storage:
     container_name: storage
@@ -109,7 +105,5 @@ services:
   postgres:
     container_name: postgres
     image: postgres:13-alpine
-    ports:
-      - 5432:5432
     environment:
       - POSTGRES_PASSWORD=postgres
