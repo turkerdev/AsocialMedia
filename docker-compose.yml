@@ -1,37 +1,5 @@
 services:
 
-  # frontend:
-  #   image: node:18-alpine
-  #   restart: unless-stopped
-  #   ports:
-  #     - 3000:3000
-  #     - 8002:8002
-  #   environment:
-  #     - GRPC_RESOURCE_HOST=gatewayservice:6543
-  #   working_dir: /app
-  #   volumes:
-  #     - ./src/frontend:/app
-  #   command: npm run dev
-
-  # gatewayservice:
-  #   image: node:18-alpine
-  #   restart: unless-stopped
-  #   ports:
-  #     - 6543:6543
-  #   environment:
-  #     - DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
-  #     - RABBITMQ_URL=amqp://rabbitmqservice:5672
-  #     - BUCKET_URL=http://bucketservice:9000
-  #     - BUCKET_KEY=minioadmin
-  #     - BUCKET_SECRET=minioadmin
-  #     - UPLOAD_URL=http://uploadservice:8787
-  #     - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-  #     - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-  #   working_dir: /app
-  #   volumes:
-  #     - ./src/gateway:/app
-  #   command: npm run dev
-
   ytdlservice:
     container_name: ytdlservice
     build:
@@ -46,16 +14,6 @@ services:
       - rabbitmq
       - storage
 
-  # uploadservice:
-  #   image: node:18-alpine
-  #   restart: unless-stopped
-  #   ports:
-  #     - 8787:8787
-  #   working_dir: /app
-  #   volumes:
-  #     - ./src/uploadservice:/app
-  #   command: npm run dev -- -b BUCKET_URL=http://bucketservice:9000 -b BUCKET_KEY=minioadmin -b BUCKET_SECRET=minioadmin
-
   remix:
     container_name: remix
     build:
@@ -69,25 +27,6 @@ services:
     command: npm run dev
     depends_on:
       - postgres
-
-  # browser:
-  #   container_name: browser
-  #   build:
-  #     context: src/browser
-  #     dockerfile: Dockerfile
-  #     target: development
-  #   volumes:
-  #     - ./src/browser:/app
-  #   working_dir: /app
-  #   ports:
-  #     - 4054:4054
-  #   environment:
-  #     - STORAGE_URL=http://storage:9000
-  #     - STORAGE_KEY=minioadmin
-  #     - STORAGE_SECRET=minioadmin
-  #   command: npm run dev
-  #   depends_on:
-  #     - storage
 
   storage:
     container_name: storage
