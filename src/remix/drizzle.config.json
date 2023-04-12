@@ -1,4 +1,4 @@
 {
     "out": "./migrations",
-    "schema": "./src/db/schema"
+    "schema": "./src/db/schema.server.ts"
 }

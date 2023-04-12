@@ -23,7 +23,7 @@ services:
     ports:
       - 3000:3000
     environment:
-      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/remix
+      - DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
     command: npm run dev
     depends_on:
       - postgres
@@ -44,5 +44,7 @@ services:
   postgres:
     container_name: postgres
     image: postgres:13-alpine
+    ports:
+      - 5432:5432
     environment:
       - POSTGRES_PASSWORD=postgres

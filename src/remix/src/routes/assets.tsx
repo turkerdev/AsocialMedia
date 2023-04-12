@@ -1,7 +1,7 @@
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { Fragment } from "react";
 import { db } from "~/db/db.server";
-import { assets } from "~/db/schema/assets.server";
+import { assets } from "~/db/schema.server";
 
 export const loader = async () => {
   // TODO: Use streaming and pagination
@@ -20,7 +20,7 @@ export default function Index() {
     <div>
       <center>
         <fetcher.Form action="create" method="POST">
-          <input type="text" name="url" placeholder="URL" />
+          <input type="url" name="url" placeholder="URL" required />
           <input type="text" name="description" placeholder="Description" />
           <button type="submit">Submit</button>
         </fetcher.Form>
