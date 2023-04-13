@@ -10,6 +10,7 @@ services:
       - S3_URL=http://storage:9000
       - S3_KEY=minioadmin
       - S3_SECRET=minioadmin
+      - API_URL=http://remix:3000
     depends_on:
       - rabbitmq
       - storage
@@ -24,9 +25,11 @@ services:
       - 3000:3000
     environment:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
+      - RABBITMQ_URL=amqp://rabbitmq:5672
     command: npm run dev
     depends_on:
       - postgres
+      - rabbitmq
 
   storage:
     container_name: storage

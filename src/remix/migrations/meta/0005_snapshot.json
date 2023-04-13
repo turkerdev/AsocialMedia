@@ -1,0 +1,66 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "id": "38f7a7bd-3ae8-4800-8046-d5a426600f3a",
+  "prevId": "638422c8-e2dd-41cb-b842-a6c013c2eb5d",
+  "tables": {
+    "assets": {
+      "name": "assets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "status": {
+          "name": "status",
+          "type": "asset_status",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'not_in_bucket'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {}
+    }
+  },
+  "enums": {
+    "asset_status": {
+      "name": "asset_status",
+      "values": {
+        "in_bucket": "in_bucket",
+        "not_in_bucket": "not_in_bucket",
+        "in_use": "in_use"
+      }
+    }
+  },
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}

@@ -36,6 +36,11 @@ export default function Index() {
               <input type="hidden" name="id" value={asset.id} />
               <button type="submit">Delete</button>
             </fetcher.Form>
+
+            <fetcher.Form action="download" method="POST">
+              <input type="hidden" name="id" value={asset.id} />
+              <button type="submit">Download</button>
+            </fetcher.Form>
           </Fragment>
         ))}
       </center>
