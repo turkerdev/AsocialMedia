@@ -26,6 +26,9 @@ services:
     environment:
       - DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres
       - RABBITMQ_URL=amqp://rabbitmq:5672
+      - GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID
+      - GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET
+      - GOOGLE_REDIRECT_URI=$GOOGLE_REDIRECT_URI
     command: npm run dev
     depends_on:
       - postgres

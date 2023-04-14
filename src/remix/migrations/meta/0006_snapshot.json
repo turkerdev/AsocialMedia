@@ -1,0 +1,113 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "id": "0178b557-825b-4984-af98-78fc473e40c5",
+  "prevId": "38f7a7bd-3ae8-4800-8046-d5a426600f3a",
+  "tables": {
+    "assets": {
+      "name": "assets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "status": {
+          "name": "status",
+          "type": "asset_status",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'not_in_bucket'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {}
+    },
+    "social_accounts": {
+      "name": "social_accounts",
+      "schema": "",
+      "columns": {
+        "platform": {
+          "name": "platform",
+          "type": "social_platform",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "platform_id": {
+          "name": "platform_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "access_token": {
+          "name": "access_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "refresh_token": {
+          "name": "refresh_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "social_accounts_platform_platform_id": {
+          "name": "social_accounts_platform_platform_id",
+          "columns": [
+            "platform",
+            "platform_id"
+          ]
+        }
+      }
+    }
+  },
+  "enums": {
+    "asset_status": {
+      "name": "asset_status",
+      "values": {
+        "in_bucket": "in_bucket",
+        "not_in_bucket": "not_in_bucket",
+        "in_use": "in_use"
+      }
+    },
+    "social_platform": {
+      "name": "social_platform",
+      "values": {
+        "youtube": "youtube"
+      }
+    }
+  },
+  "schemas": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}
