@@ -1,4 +1,5 @@
 import { Link, useLoaderData } from "@remix-run/react";
+import { Fragment } from "react";
 import { db } from "~/db/db.server";
 import { social_accounts } from "~/db/schema.server";
 
@@ -24,9 +25,9 @@ export default function Component() {
       {data.accounts
         .filter((x) => x.platform === "youtube")
         .map((account) => (
-          <>
+          <Fragment key={account.platform + "_" + account.platformId}>
             <p>{account.platformId}</p>
-          </>
+          </Fragment>
         ))}
       <hr />
     </>
